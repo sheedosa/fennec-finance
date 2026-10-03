@@ -322,7 +322,8 @@ const INV_STATUS = ['Draft','Sent','Paid','Cancelled'];
 const METHODS = ['Cash','Bank Transfer','Cheque','Card'];
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-'+Math.random().toString(36).slice(2));
 const today = () => { const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
-const fmt = n => { n = Number(n||0); const s = Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:2}); return n<0?`−${s}`:s; };
+const r2 = n => Math.round((Number(n)||0)*100)/100;
+const fmt = n => { n = r2(n); const s = Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:2}); return n<0?`−${s}`:s; };
 const fmtD = d => d ? new Date(d+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
 const fmtDL = d => d ? new Date(d+'T00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'}) : '';
 const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -429,18 +430,18 @@ async function reload(){
 /* ---------- derived numbers ---------- */
 function stats(){
   const tx=D.transactions;
-  const sum=(f)=>tx.filter(f).reduce((a,t)=>a+amountLYD(t),0);
+  const sum=(f)=>r2(tx.filter(f).reduce((a,t)=>a+amountLYD(t),0));
   const inc=sum(t=>t.direction==='In'), exp=sum(t=>t.direction==='Out');
-  const cash=sum(t=>t.direction==='In'&&t.method==='Cash')-sum(t=>t.direction==='Out'&&t.method==='Cash');
-  const bank=sum(t=>t.direction==='In'&&t.method==='Bank Transfer')-sum(t=>t.direction==='Out'&&t.method==='Bank Transfer');
+  const byMethod=(...ms)=>r2(sum(t=>t.direction==='In'&&ms.includes(t.method))-sum(t=>t.direction==='Out'&&ms.includes(t.method)));
+  const cash=byMethod('Cash'), bank=byMethod('Bank Transfer','Card'), cheques=byMethod('Cheque');
   const paidFor=id=>sum(t=>t.direction==='In'&&t.invoice_id===id);
-  const inv=D.invoices.map(i=>{const paid=paidFor(i.id); return {...i,paid,balance:i.status==='Cancelled'?0:Math.max(0,Number(i.amount)-paid),overdue:i.status==='Sent'&&i.due&&i.due<today()};});
-  const outstanding=inv.filter(i=>i.status==='Sent').reduce((a,i)=>a+i.balance,0);
+  const inv=D.invoices.map(i=>{const paid=paidFor(i.id); const settled=i.status==='Paid'||i.status==='Cancelled'; return {...i,paid,balance:settled?0:Math.max(0,r2(Number(i.amount)-paid)),overdue:i.status==='Sent'&&i.due&&i.due<today()};});
+  const outstanding=r2(inv.filter(i=>i.status==='Sent').reduce((a,i)=>a+i.balance,0));
   const overdue=inv.filter(i=>i.overdue).length;
-  const projects=D.projects.map(p=>{const spent=sum(t=>t.direction==='Out'&&t.project_id===p.id), coll=sum(t=>t.direction==='In'&&t.project_id===p.id);
-    return {...p,spent,collected:coll,remaining:Number(p.budget)-spent,used:p.budget>0?spent/Number(p.budget):0,net:coll-spent};});
-  const depts={}; tx.filter(t=>t.direction==='Out').forEach(t=>{const d=dept(t.category); depts[d]=(depts[d]||0)+amountLYD(t);});
-  return {inc,exp,net:inc-exp,cash,bank,outstanding,overdue,inv,projects,depts,active:D.projects.filter(p=>p.status==='Active').length};
+  const projects=D.projects.map(p=>{const spent=sum(t=>t.direction==='Out'&&t.project_id===p.id), coll=sum(t=>t.direction==='In'&&t.project_id===p.id), budget=r2(p.budget);
+    return {...p,spent,collected:coll,remaining:r2(budget-spent),used:budget>0?spent/budget:(spent>0?Infinity:0),net:r2(coll-spent)};});
+  const depts={}; tx.filter(t=>t.direction==='Out').forEach(t=>{const d=dept(t.category); depts[d]=r2((depts[d]||0)+amountLYD(t));});
+  return {inc,exp,net:r2(inc-exp),cash,bank,cheques,outstanding,overdue,inv,projects,depts,active:D.projects.filter(p=>p.status==='Active').length};
 }
 function nextInvoiceNumber(){
   let max=0; for(const i of D.invoices){ const m=/(\d+)\s*$/.exec(i.number||''); if(m) max=Math.max(max,Number(m[1])); }
@@ -493,6 +494,7 @@ function homeView(s){
     <ul class="facts">
       <li><span>Cash in hand</span><b class="num">${fmt(s.cash)}</b></li>
       <li><span>In the bank</span><b class="num">${fmt(s.bank)}</b></li>
+      ${s.cheques?`<li><span>Cheques pending</span><b class="num">${fmt(s.cheques)}</b></li>`:''}
       <li><span>Owed to us by clients</span><b class="num">${fmt(s.outstanding)}${s.overdue?`<i data-nav="invoices">${s.overdue} overdue</i>`:''}</b></li>
       <li><span>Productions in progress</span><b>${s.active}</b></li>
     </ul>
@@ -537,12 +539,12 @@ function txFiltered(){
 function txListHtml(list){
   const groups={}; list.forEach(t=>{(groups[t.date]=groups[t.date]||[]).push(t)});
   if(!Object.keys(groups).length) return `<div class="card empty">${D.transactions.length?'No entries match these filters.':'Nothing here yet.'}${D.transactions.length?'':'<button class="btn sm" id="hs-tx">Log the first entry</button>'}</div>`;
-  return Object.entries(groups).map(([d,arr])=>{const net=arr.reduce((a,t)=>a+(t.direction==='In'?1:-1)*amountLYD(t),0);
+  return Object.entries(groups).map(([d,arr])=>{const net=r2(arr.reduce((a,t)=>a+(t.direction==='In'?1:-1)*amountLYD(t),0));
     return `<div class="day"><h3><span>${fmtDL(d)}</span><span class="num">${net>=0?'+':''}${fmt(net)}</span></h3><div class="ledger">${arr.map(t=>txRow(t,false)).join('')}</div></div>`;}).join('');
 }
 function txView(){
   const list=txFiltered();
-  const total=list.reduce((a,t)=>a+(t.direction==='In'?1:-1)*amountLYD(t),0);
+  const total=r2(list.reduce((a,t)=>a+(t.direction==='In'?1:-1)*amountLYD(t),0));
   return `<div class="topbar"><h1>Ledger</h1><span class="muted small num" id="tx-count">${list.length} entries · ${total>=0?'+':''}${fmt(total)} LYD</span></div>
   <div class="filters">
     <select id="f-proj" aria-label="Filter by project"><option value="">All projects</option>${D.projects.map(p=>`<option value="${p.id}" ${txFilter.project===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}<option value="none" ${txFilter.project==='none'?'selected':''}>No project (overhead)</option></select>
@@ -650,7 +652,7 @@ function bind(s){
   ['#add-inv','#add-inv2'].forEach(id=>{const b=$(id); if(b) b.onclick=()=>openInvoice();});
   const ht=$('#hs-tx'); if(ht) ht.onclick=()=>openTx();
   const fp=$('#f-proj'); if(fp){
-    const refresh=()=>{ const list=txFiltered(); $('#tx-list').innerHTML=txListHtml(list); const total=list.reduce((a,t)=>a+(t.direction==='In'?1:-1)*amountLYD(t),0); $('#tx-count').textContent=`${list.length} entries · ${total>=0?'+':''}${fmt(total)} LYD`; app.querySelectorAll('#tx-list [data-tx]').forEach(el=>el.onclick=()=>openTx(D.transactions.find(t=>t.id===el.dataset.tx))); const h=$('#hs-tx'); if(h) h.onclick=()=>openTx(); };
+    const refresh=()=>{ const list=txFiltered(); $('#tx-list').innerHTML=txListHtml(list); const total=r2(list.reduce((a,t)=>a+(t.direction==='In'?1:-1)*amountLYD(t),0)); $('#tx-count').textContent=`${list.length} entries · ${total>=0?'+':''}${fmt(total)} LYD`; app.querySelectorAll('#tx-list [data-tx]').forEach(el=>el.onclick=()=>openTx(D.transactions.find(t=>t.id===el.dataset.tx))); const h=$('#hs-tx'); if(h) h.onclick=()=>openTx(); };
     fp.onchange=()=>{txFilter.project=fp.value;refresh();}; $('#f-dir').onchange=e=>{txFilter.dir=e.target.value;refresh();};
     const fq=$('#f-q'); let t; fq.oninput=()=>{clearTimeout(t);t=setTimeout(()=>{txFilter.q=fq.value;refresh();},150)}; }
   if(page==='settings'){
