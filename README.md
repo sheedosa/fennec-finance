@@ -4,8 +4,17 @@ Production finance for Fennec Productions: a ledger of money in and out, product
 
 - `index.html` — the whole app, with the Fennec Supabase project built in.
 - `schema.sql` — creates the tables in a Supabase project.
-- `icon.svg`, `apple-touch-icon.png`, `manifest.webmanifest` — lets the site install as an app on a phone's home screen.
 - `vercel.json` — tells Vercel to serve the folder as a static site.
+- Brand assets, all derived from the official Fennec Productions wordmark:
+  - `logo.png` — the wordmark on a transparent background (sidebar and sign-in; inverted automatically in dark mode).
+  - `og.png` — 1200×630 preview image shown when the link is shared on WhatsApp, Slack, X, LinkedIn, etc.
+  - `icon-192.png`, `icon-512.png`, `apple-touch-icon.png` — the "F" app icon for the browser tab, Android and iPhone home screens; listed in `manifest.webmanifest`.
+
+  To refresh them from a new logo file, re-run the generator (a short Playwright script that
+  traces the logo onto a transparent canvas and renders the icons and preview image; it lives
+  outside the repo). The share-preview tags in `index.html` (`og:url`, `og:image`,
+  `twitter:image`, `canonical`) carry the absolute production URL; change those four lines if
+  the site moves to a custom domain.
 
 Live at the Vercel URL; every push to `main` redeploys.
 

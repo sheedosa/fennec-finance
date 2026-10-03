@@ -3,15 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Fennec Finance</title>
+<title>Fennec Productions — Finance</title>
 <meta name="description" content="Production finance for Fennec Productions: ledger, productions, invoices.">
-<meta name="theme-color" content="#F6F5F1" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#141A23" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://fennec-finance-b7i2.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Fennec Productions">
+<meta property="og:title" content="Fennec Productions — Finance">
+<meta property="og:description" content="Ledger, productions and invoices for Fennec Productions.">
+<meta property="og:url" content="https://fennec-finance-b7i2.vercel.app/">
+<meta property="og:image" content="https://fennec-finance-b7i2.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Fennec Productions — Production finance">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Fennec Productions — Finance">
+<meta name="twitter:description" content="Ledger, productions and invoices for Fennec Productions.">
+<meta name="twitter:image" content="https://fennec-finance-b7i2.vercel.app/og.png">
+<meta name="theme-color" content="#F3F3F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B0B0B" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Fennec">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,23 +36,23 @@ try{const t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.do
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{
-  --ink:#17304F; --ink-2:#3B5272; --paper:#F6F5F1; --card:#FFFFFF; --line:#E4E2DB; --line-2:#D3D0C6; --muted:#7A7F88; --field:#FBFAF7;
-  --sand:#C9A96E; --sand-2:#EFE6D3; --sand-3:#A8894F; --in:#2A7A46; --in-2:#E3F1E7; --out:#B3382B; --out-2:#F7E4E1; --amber:#FFF0C7;
-  --side:#17304F; --on-ink:#FFFFFF; --hover:rgba(23,48,79,.04); --shadow:0 12px 40px rgba(23,48,79,.18);
+  --ink:#111111; --ink-2:#3A3A3A; --paper:#F3F3F3; --card:#FFFFFF; --line:#E4E4E4; --line-2:#CBCBCB; --muted:#666666; --field:#F8F8F8;
+  --sand:#111111; --sand-2:#EFEFEF; --sand-3:#3A3A3A; --in:#1F7A3F; --in-2:#E1F3E7; --out:#C0392B; --out-2:#FBE5E2; --amber:#FFF0BF;
+  --side:#FFFFFF; --on-ink:#FFFFFF; --hover:rgba(0,0,0,.045); --shadow:0 12px 40px rgba(0,0,0,.2);
   --r:12px; --nav-h:60px;
   box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --ink:#E9EEF5; --ink-2:#B9C5D6; --paper:#141A23; --card:#1C2430; --line:#2B3542; --line-2:#3A4556; --muted:#8C97A6; --field:#161D27;
-  --sand:#D4B47C; --sand-2:#2E2A20; --sand-3:#E2C58F; --in:#6FCB8B; --in-2:#1E3326; --out:#F08A7D; --out-2:#3A2321; --amber:#3A3320;
-  --side:#0E141C; --on-ink:#141A23; --hover:rgba(233,238,245,.05); --shadow:0 12px 40px rgba(0,0,0,.5);
+  --ink:#F4F4F4; --ink-2:#D0D0D0; --paper:#0B0B0B; --card:#161616; --line:#2A2A2A; --line-2:#3C3C3C; --muted:#9A9A9A; --field:#111111;
+  --sand:#F4F4F4; --sand-2:#222222; --sand-3:#CFCFCF; --in:#6FCB8B; --in-2:#173A24; --out:#F08A7D; --out-2:#3E201C; --amber:#3B3317;
+  --side:#0B0B0B; --on-ink:#0B0B0B; --hover:rgba(255,255,255,.06); --shadow:0 12px 40px rgba(0,0,0,.6);
   color-scheme:dark;
 }}
 :root[data-theme="dark"]{
-  --ink:#E9EEF5; --ink-2:#B9C5D6; --paper:#141A23; --card:#1C2430; --line:#2B3542; --line-2:#3A4556; --muted:#8C97A6; --field:#161D27;
-  --sand:#D4B47C; --sand-2:#2E2A20; --sand-3:#E2C58F; --in:#6FCB8B; --in-2:#1E3326; --out:#F08A7D; --out-2:#3A2321; --amber:#3A3320;
-  --side:#0E141C; --on-ink:#141A23; --hover:rgba(233,238,245,.05); --shadow:0 12px 40px rgba(0,0,0,.5);
+  --ink:#F4F4F4; --ink-2:#D0D0D0; --paper:#0B0B0B; --card:#161616; --line:#2A2A2A; --line-2:#3C3C3C; --muted:#9A9A9A; --field:#111111;
+  --sand:#F4F4F4; --sand-2:#222222; --sand-3:#CFCFCF; --in:#6FCB8B; --in-2:#173A24; --out:#F08A7D; --out-2:#3E201C; --amber:#3B3317;
+  --side:#0B0B0B; --on-ink:#0B0B0B; --hover:rgba(255,255,255,.06); --shadow:0 12px 40px rgba(0,0,0,.6);
   color-scheme:dark;
 }
 *{box-sizing:border-box} html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -54,18 +69,20 @@ a{color:inherit}
 
 /* shell */
 .shell{display:grid;grid-template-columns:224px 1fr;min-height:100%}
-.side{background:var(--side);border-right:1px solid var(--line);color:#fff;padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
-.brand{display:flex;align-items:center;gap:10px;margin:0 0 8px 4px;font-weight:700;font-size:19px;letter-spacing:-.01em;line-height:1.1}
-.brand svg{width:30px;height:30px;flex:none}
-.brand small{display:block;font-weight:400;font-size:11.5px;opacity:.6;letter-spacing:.02em;margin-top:2px}
+.side{background:var(--side);border-right:1px solid var(--line);color:var(--ink);padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+.brand{margin:6px 6px 16px}
+.brand img{display:block;width:150px;height:auto}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .brand img{filter:invert(1)} }
+:root[data-theme="dark"] .brand img{filter:invert(1)}
 .nav{display:flex;flex-direction:column;gap:2px;margin-top:12px}
-.nav button{background:none;border:0;text-align:left;padding:10px 10px;border-radius:9px;color:rgba(255,255,255,.72);cursor:pointer;display:flex;gap:10px;align-items:center;font-weight:500;transition:background .12s,color .12s}
+.nav button{background:none;border:0;text-align:left;padding:10px 10px;border-radius:9px;color:var(--muted);cursor:pointer;display:flex;gap:10px;align-items:center;font-weight:500;transition:background .12s,color .12s}
 .nav button svg{width:18px;height:18px;flex:none;opacity:.85}
-.nav button.on{background:rgba(255,255,255,.12);color:#fff}
-.nav button:hover{color:#fff;background:rgba(255,255,255,.07)}
+.nav button.on{background:var(--sand-2);color:var(--ink)}
+.nav button.on svg{opacity:1}
+.nav button:hover{color:var(--ink);background:var(--hover)}
 .side .spacer{flex:1}
-.side .who{font-size:12px;opacity:.65;margin:0 4px;display:grid;gap:2px}
-.side .who b{font-weight:500;opacity:1;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side .who{font-size:12px;color:var(--muted);margin:0 4px;display:grid;gap:2px}
+.side .who b{font-weight:500;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .side .who .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--in);margin-right:6px;vertical-align:1px}
 .side .who .dot.off{background:var(--out)}
 .side .who .ver{opacity:.5;font-size:11px;margin-top:4px}
@@ -76,7 +93,7 @@ h2{font-size:15px;margin:0 0 10px;font-weight:600;color:var(--ink-2)}
 .tabbar{display:none}
 
 /* primary action */
-.fab{position:fixed;right:24px;bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--sand);color:#1E1A10;border:0;border-radius:999px;padding:14px 20px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;display:flex;gap:8px;align-items:center;z-index:30;transition:transform .12s,box-shadow .12s}
+.fab{position:fixed;right:24px;bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--on-ink);border:0;border-radius:999px;padding:14px 20px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;display:flex;gap:8px;align-items:center;z-index:30;transition:transform .12s,box-shadow .12s}
 .fab:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(0,0,0,.22)}
 .fab:active{transform:translateY(0)}
 .fab svg{width:18px;height:18px}
@@ -127,7 +144,6 @@ td.r,th.r{text-align:right}
 .btn:active{transform:translateY(1px)}
 .btn.primary{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
 .btn.primary:hover{filter:brightness(1.1)}
-.btn.sand{background:var(--sand);color:#1E1A10;border-color:var(--sand)}
 .btn.danger{color:var(--out)} .btn.danger:hover{background:var(--out-2);border-color:transparent}
 .btn.ghost{border-color:transparent;background:none} .btn.ghost:hover{background:var(--hover)}
 .btn.sm{height:30px;padding:0 10px;font-size:13px;border-radius:7px}
@@ -250,8 +266,9 @@ details.card .inner{padding:0 18px 16px}
 /* auth, loading, errors */
 .auth{min-height:100%;display:grid;place-items:center;padding:20px}
 .auth .card{width:min(400px,100%);padding:26px 26px 22px}
-.auth .brand{color:var(--ink);margin:0 0 18px;font-size:22px}
-.auth .brand small{color:var(--muted);opacity:1}
+.auth .brand{margin:4px 0 22px;text-align:center}
+.auth .brand img{width:210px;margin:0 auto 10px}
+.auth .brand small{display:block;color:var(--muted);font-size:13px;letter-spacing:.02em}
 .auth .msg{font-size:13px;color:var(--out);font-weight:500;min-height:18px}
 .loading{min-height:100%;display:grid;place-items:center;color:var(--muted);gap:12px}
 .loading .spin{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--sand);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
@@ -305,7 +322,6 @@ const DEFAULT_SB = {
   key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3ljcnVqb3lmZnZ2dmRsenVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDc2MjQsImV4cCI6MjA5NzE4MzYyNH0.yeIh4ZFG024RDCj2iV7Ur4aiQtiEml1GgX1G2dD0JWM'
 };
 const I = {
-  mark:'<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3l7 11H3z" fill="#C9A96E"/><path d="M26 3l3 11H19z" fill="#C9A96E"/><circle cx="16" cy="20" r="9" fill="#C9A96E"/><circle cx="12.5" cy="19" r="1.4" fill="#17304F"/><circle cx="19.5" cy="19" r="1.4" fill="#17304F"/><path d="M16 22.5l-1.6 1.6h3.2z" fill="#17304F"/></svg>',
   home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
   list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
   film:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/></svg>',
@@ -318,7 +334,7 @@ const I = {
   down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>'
 };
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '1.2.0';
 const STATUS = ['Pitching','Active','Delivered','Closed'];
 const INV_STATUS = ['Draft','Sent','Paid','Cancelled'];
 const METHODS = ['Cash','Bank Transfer','Cheque','Card'];
@@ -456,7 +472,7 @@ function shell(content){
   const nav=()=>items.map(([k,l,ic])=>`<button class="${page===k?'on':''}" data-nav="${k}" ${page===k?'aria-current="page"':''}>${ic}<span>${l}</span></button>`).join('');
   const who = DB.mode==='supabase' ? `<span><span class="dot"></span>Live</span><b title="${esc(DB.user?.email||'')}">${esc(DB.user?.email||'')}</b>` : `<span><span class="dot off"></span>Offline — nothing is saved</span>`;
   app.innerHTML=`<div class="shell">
-    <aside class="side"><div class="brand">${I.mark}<div>Fennec<small>Production finance</small></div></div><nav class="nav" aria-label="Main">${nav()}</nav>
+    <aside class="side"><div class="brand"><img src="logo.png" alt="Fennec Productions"></div><nav class="nav" aria-label="Main">${nav()}</nav>
       <div class="spacer"></div><div class="who">${who}<span class="ver">v${APP_VERSION}</span></div></aside>
     <main class="main">${content}</main></div>
     <nav class="tabbar" aria-label="Main">${nav()}</nav>
@@ -614,7 +630,7 @@ function settingsView(){
   </div>`;
 }
 function renderAuth(msg){
-  app.innerHTML=`<div class="auth"><form class="card" id="auth-form" novalidate><div class="brand">${I.mark}<div>Fennec Finance<small>Production finance for Fennec Productions</small></div></div>
+  app.innerHTML=`<div class="auth"><form class="card" id="auth-form" novalidate><div class="brand"><img src="logo.png" alt="Fennec Productions"><small>Production finance</small></div>
     <div class="f">
       <div class="fld"><span class="lbl">Email</span><input id="au-email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required><small class="err"></small></div>
       <div class="fld"><span class="lbl">Password</span><input id="au-pass" type="password" autocomplete="current-password" required><small class="err"></small></div>
@@ -804,7 +820,7 @@ function openInvoice(i){
     ${fld('Amount','<input id="i-amt" type="number" inputmode="decimal" min="0" step="0.01" value="'+esc(i.amount)+'" placeholder="0">',{hint:'LYD'})}
     <div class="row">${fld('Issued','<input id="i-issued" type="date" value="'+esc(i.issued||'')+'">')}${fld('Due','<input id="i-due" type="date" value="'+esc(i.due||'')+'">',{hint:'optional'})}</div>
   </div>`,
-  `${edit?`<span class="right"><button class="btn danger" id="i-del">Delete</button>${s&&s.balance>0&&s.status!=='Cancelled'?`<button class="btn sand" id="i-pay">Record payment</button>`:''}</span>`:'<span></span>'}<span class="right"><button class="btn" id="i-cancel">Cancel</button><button class="btn primary" id="i-save">${edit?'Save changes':'Create invoice'}</button></span>`);
+  `${edit?`<span class="right"><button class="btn danger" id="i-del">Delete</button>${s&&s.balance>0&&s.status!=='Cancelled'?`<button class="btn primary" id="i-pay">Record payment</button>`:''}</span>`:'<span></span>'}<span class="right"><button class="btn" id="i-cancel">Cancel</button><button class="btn primary" id="i-save">${edit?'Save changes':'Create invoice'}</button></span>`);
   $('#i-proj').onchange=e=>{ const p=D.projects.find(x=>x.id===e.target.value); if(p&&!$('#i-client').value) $('#i-client').value=p.client||''; };
   if(!edit){ const p=D.projects.find(x=>x.id===i.project_id); if(p&&p.client) $('#i-client').value=p.client; }
   $('#i-cancel').onclick=closeSheet;

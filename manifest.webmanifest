@@ -1,13 +1,14 @@
 {
-  "name": "Fennec Finance",
+  "name": "Fennec Productions — Finance",
   "short_name": "Fennec",
-  "description": "Production finance for Fennec Productions",
+  "description": "Production finance for Fennec Productions: ledger, productions, invoices.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F6F5F1",
-  "theme_color": "#17304F",
+  "background_color": "#FFFFFF",
+  "theme_color": "#111111",
   "icons": [
-    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
