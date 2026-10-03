@@ -34,6 +34,22 @@ On a phone, use **Share → Add to Home Screen** and it opens like an app.
 
 All reporting is in LYD. Foreign-currency entries keep the rate confirmed at the time, so updating rates in Settings never changes history.
 
+### Languages
+
+The app is fully bilingual: English and Arabic (right-to-left, Tajawal typeface). It opens in Arabic
+for browsers set to Arabic, otherwise in English. Switch at any time from **Settings → Language**,
+the link under the sign-in form, or the link at the bottom of the sidebar; the choice is remembered
+per browser. Amounts and dates use Western digits in both languages; the company name stays as
+in the logo.
+
+Statuses, payment methods and the default categories are stored in English in the database and
+translated for display, so data entered in either language is the same data. Categories and
+payees you add yourself appear exactly as typed.
+
+To change a translation, edit the `STR` dictionary near the top of the script in `index.html`
+(one entry per language; every key must exist in both). Display names for stored values are in
+`LBL` just below it.
+
 ## Owner setup checklist (Supabase dashboard)
 
 The database is already connected. Two things must be done in the dashboard before real data goes in:

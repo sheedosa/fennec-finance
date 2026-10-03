@@ -30,9 +30,11 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script>/* apply saved theme before first paint */
-try{const t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<script>/* apply saved theme and language before first paint */
+try{const t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;
+let l=localStorage.getItem('lang');if(l!=='ar'&&l!=='en')l=((navigator.language||'').toLowerCase().startsWith('ar'))?'ar':'en';
+document.documentElement.lang=l;document.documentElement.dir=l==='ar'?'rtl':'ltr';if(l==='ar')document.title='Fennec Productions — المالية';}catch(e){}</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{
@@ -69,13 +71,13 @@ a{color:inherit}
 
 /* shell */
 .shell{display:grid;grid-template-columns:224px 1fr;min-height:100%}
-.side{background:var(--side);border-right:1px solid var(--line);color:var(--ink);padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+.side{background:var(--side);border-inline-end:1px solid var(--line);color:var(--ink);padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
 .brand{margin:6px 6px 16px}
 .brand img{display:block;width:150px;height:auto}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .brand img{filter:invert(1)} }
 :root[data-theme="dark"] .brand img{filter:invert(1)}
 .nav{display:flex;flex-direction:column;gap:2px;margin-top:12px}
-.nav button{background:none;border:0;text-align:left;padding:10px 10px;border-radius:9px;color:var(--muted);cursor:pointer;display:flex;gap:10px;align-items:center;font-weight:500;transition:background .12s,color .12s}
+.nav button{background:none;border:0;text-align:start;padding:10px 10px;border-radius:9px;color:var(--muted);cursor:pointer;display:flex;gap:10px;align-items:center;font-weight:500;transition:background .12s,color .12s}
 .nav button svg{width:18px;height:18px;flex:none;opacity:.85}
 .nav button.on{background:var(--sand-2);color:var(--ink)}
 .nav button.on svg{opacity:1}
@@ -83,7 +85,10 @@ a{color:inherit}
 .side .spacer{flex:1}
 .side .who{font-size:12px;color:var(--muted);margin:0 4px;display:grid;gap:2px}
 .side .who b{font-weight:500;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.side .who .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--in);margin-right:6px;vertical-align:1px}
+.side .who .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--in);margin-inline-end:6px;vertical-align:1px}
+.side .who .ver{display:flex;gap:10px;align-items:center}
+.lang-btn{background:none;border:0;padding:0;cursor:pointer;color:var(--muted);font-size:12px;text-decoration:underline;text-underline-offset:3px}
+.lang-btn:hover{color:var(--ink)}
 .side .who .dot.off{background:var(--out)}
 .side .who .ver{opacity:.5;font-size:11px;margin-top:4px}
 .main{padding:28px 32px 110px;max-width:1120px;width:100%}
@@ -93,7 +98,7 @@ h2{font-size:15px;margin:0 0 10px;font-weight:600;color:var(--ink-2)}
 .tabbar{display:none}
 
 /* primary action */
-.fab{position:fixed;right:24px;bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--on-ink);border:0;border-radius:999px;padding:14px 20px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;display:flex;gap:8px;align-items:center;z-index:30;transition:transform .12s,box-shadow .12s}
+.fab{position:fixed;inset-inline-end:24px;bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--on-ink);border:0;border-radius:999px;padding:14px 20px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;display:flex;gap:8px;align-items:center;z-index:30;transition:transform .12s,box-shadow .12s}
 .fab:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(0,0,0,.22)}
 .fab:active{transform:translateY(0)}
 .fab svg{width:18px;height:18px}
@@ -103,10 +108,10 @@ h2{font-size:15px;margin:0 0 10px;font-weight:600;color:var(--ink-2)}
 .grid{display:grid;gap:14px}
 .two{grid-template-columns:3fr 2fr}
 table{width:100%;border-collapse:collapse;font-size:14px}
-th{text-align:left;font-weight:600;color:var(--muted);font-size:12px;padding:0 8px 8px;border-bottom:1px solid var(--line)}
+th{text-align:start;font-weight:600;color:var(--muted);font-size:12px;padding:0 8px 8px;border-bottom:1px solid var(--line)}
 td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
 tr:last-child td{border-bottom:0}
-td.r,th.r{text-align:right}
+td.r,th.r{text-align:end}
 .tbl-wrap{overflow-x:auto}
 .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:500;background:var(--line);white-space:nowrap}
 .pill.Active,.pill.Paid,.pill.Delivered{background:var(--in-2);color:var(--in)}
@@ -123,10 +128,10 @@ td.r,th.r{text-align:right}
 .day{margin-top:18px}
 .day h3{font-size:12px;font-weight:600;color:var(--muted);margin:0 0 6px 2px;display:flex;justify-content:space-between}
 .ledger{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
-.tx{display:grid;grid-template-columns:1fr auto;gap:2px 14px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer;width:100%;text-align:left;background:none;border-left:0;border-right:0;border-top:0;color:inherit}
+.tx{display:grid;grid-template-columns:1fr auto;gap:2px 14px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer;width:100%;text-align:start;background:none;border-left:0;border-right:0;border-top:0;color:inherit}
 .tx:first-child{border-top:0} .tx:last-child{border-bottom:0} .tx:hover{background:var(--hover)}
 .tx .t{font-weight:500;grid-column:1;grid-row:1} .tx .s{font-size:12px;color:var(--muted);grid-column:1;grid-row:2}
-.tx .a{text-align:right;font-weight:600;grid-column:2;grid-row:1/3;align-self:center}
+.tx .a{text-align:end;font-weight:600;grid-column:2;grid-row:1/3;align-self:center}
 .tx .a small{display:block;font-weight:400;color:var(--muted);font-size:11px}
 
 /* filters */
@@ -134,8 +139,8 @@ td.r,th.r{text-align:right}
 .filters select,.filters input{height:38px;padding:0 12px;border:1px solid var(--line);background:var(--card);border-radius:9px;min-width:0}
 .filters input{flex:1;min-width:180px}
 .filters .search{position:relative;flex:1;display:flex}
-.filters .search svg{position:absolute;left:11px;top:50%;width:16px;height:16px;transform:translateY(-50%);color:var(--muted);pointer-events:none}
-.filters .search input{padding-left:34px;width:100%}
+.filters .search svg{position:absolute;inset-inline-start:11px;top:50%;width:16px;height:16px;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.filters .search input{padding-inline-start:34px;width:100%}
 
 /* buttons */
 .btn{border:1px solid var(--line-2);background:var(--card);height:38px;padding:0 14px;border-radius:9px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;transition:background .12s,border-color .12s,transform .05s}
@@ -167,7 +172,8 @@ td.r,th.r{text-align:right}
 .fld input::placeholder,.fld textarea::placeholder{color:var(--muted);opacity:.7}
 .fld input[type=date]{min-width:0}
 .fld input[type=number]{-moz-appearance:textfield} .fld input[type=number]::-webkit-inner-spin-button{appearance:none}
-.fld select,.filters select{appearance:none;-webkit-appearance:none;padding-right:36px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7F88' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;cursor:pointer}
+.fld select,.filters select{appearance:none;-webkit-appearance:none;padding-inline-end:36px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7F88' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;cursor:pointer}
+[dir=rtl] .fld select,[dir=rtl] .filters select{background-position:left 12px center}
 .fld .err{display:none;font-size:12px;color:var(--out);font-weight:500}
 .fld.bad input,.fld.bad select,.fld.bad textarea{border-color:var(--out);box-shadow:0 0 0 3px color-mix(in srgb,var(--out) 20%,transparent)}
 .fld.bad .err{display:block}
@@ -186,11 +192,12 @@ td.r,th.r{text-align:right}
 .seg button.on.Out{background:var(--out-2);color:var(--out)} .seg button.on.In{background:var(--in-2);color:var(--in)}
 .seg button.on{box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{display:inline-flex;align-items:center;gap:6px;background:var(--sand-2);border-radius:999px;padding:4px 6px 4px 11px;font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--sand-2);border-radius:999px;padding:4px;padding-inline-start:11px;padding-inline-end:6px;font-size:13px}
 .chip button{border:0;background:none;width:20px;height:20px;border-radius:50%;cursor:pointer;display:grid;place-items:center;color:var(--muted)}
 .chip button:hover{background:rgba(0,0,0,.08);color:var(--ink)}
 .chip button svg{width:12px;height:12px}
 .themes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.themes.two{grid-template-columns:1fr 1fr}
 .themes button{border:1px solid var(--line-2);background:var(--field);border-radius:10px;height:40px;cursor:pointer;font-weight:500;color:var(--muted)}
 .themes button.on{border-color:var(--sand);color:var(--ink);box-shadow:0 0 0 2px color-mix(in srgb,var(--sand) 30%,transparent)}
 .actions{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:4px}
@@ -226,7 +233,7 @@ body.locked .fab{display:none}
 .statement{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:start;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--line)}
 .hero .l{font-size:14px;color:var(--muted)}
 .hero .v{font-size:52px;font-weight:700;letter-spacing:-.03em;line-height:1.05;margin:2px 0 6px}
-.hero .v small{font-size:16px;font-weight:500;color:var(--muted);letter-spacing:0;margin-left:6px}
+.hero .v small{font-size:16px;font-weight:500;color:var(--muted);letter-spacing:0;margin-inline-start:6px}
 .hero .v.neg{color:var(--out)}
 .hero .sub{color:var(--muted);font-size:14px}
 .hero .sub b{color:var(--ink);font-weight:600}
@@ -234,7 +241,7 @@ body.locked .fab{display:none}
 .facts li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
 .facts li:first-child{border-top:1px solid var(--line)}
 .facts li b{font-weight:600}
-.facts li i{font-style:normal;font-size:12px;color:var(--out);margin-left:8px;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.facts li i{font-style:normal;font-size:12px;color:var(--out);margin-inline-start:8px;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 .section{margin-bottom:26px}
 .section h2{display:flex;justify-content:space-between;align-items:baseline;font-size:17px;color:var(--ink);margin-bottom:8px}
 .section h2 span{font-size:13px;color:var(--muted);font-weight:400}
@@ -242,12 +249,12 @@ body.locked .fab{display:none}
 .dept:last-child{border-bottom:0}
 .dept .bar{grid-column:1/-1;height:4px;margin-top:4px}
 .rows{display:flex;flex-direction:column}
-.prow{display:grid;grid-template-columns:1.6fr 100px 110px 1fr;gap:4px 14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left;color:inherit}
+.prow{display:grid;grid-template-columns:1.6fr 100px 110px 1fr;gap:4px 14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:start;color:inherit}
 .prow:last-child{border-bottom:0} .prow:hover{background:var(--hover)}
 .prow .n{font-weight:500} .prow .c{font-size:12px;color:var(--muted)}
-.prow .m{font-size:13px;color:var(--muted);text-align:right}
+.prow .m{font-size:13px;color:var(--muted);text-align:end}
 .prow .m b{color:var(--ink);font-weight:600}
-.irow{display:grid;grid-template-columns:1.4fr 1fr 110px 100px;gap:4px 14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left;color:inherit}
+.irow{display:grid;grid-template-columns:1.4fr 1fr 110px 100px;gap:4px 14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:start;color:inherit}
 .irow:last-child{border-bottom:0} .irow:hover{background:var(--hover)}
 .steps{display:grid;gap:10px}
 .step{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
@@ -256,7 +263,7 @@ body.locked .fab{display:none}
 .step .t{font-weight:500} .step .d{font-size:12px;color:var(--muted)}
 details.card{padding:0} details.card summary{padding:14px 18px;cursor:pointer;font-weight:600;color:var(--ink-2);list-style:none;display:flex;justify-content:space-between;align-items:center}
 details.card summary::-webkit-details-marker{display:none}
-details.card summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s;margin-right:4px}
+details.card summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s;margin-inline-end:4px}
 details.card[open] summary::after{transform:rotate(-135deg)}
 details.card .inner{padding:0 18px 16px}
 .invsum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px}
@@ -284,11 +291,11 @@ details.card .inner{padding:0 18px 16px}
   .tabbar button{flex:1;border:0;background:none;color:var(--muted);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px;padding-top:8px;cursor:pointer}
   .tabbar button svg{width:22px;height:22px}
   .tabbar button.on{color:var(--ink)}
-  .fab{bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));padding:14px 16px;right:16px}
+  .fab{bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));padding:14px 16px;inset-inline-end:16px}
   .fab span{display:none}
   .toast{bottom:calc(var(--nav-h) + 88px + env(safe-area-inset-bottom,0px))}
   .prow{grid-template-columns:1fr auto;padding:12px 0}
-  .prow .bar{grid-column:1/-1} .prow .m{grid-column:1/-1;text-align:left}
+  .prow .bar{grid-column:1/-1} .prow .m{grid-column:1/-1;text-align:start}
   .irow{grid-template-columns:1fr auto} .irow .d{grid-column:1/-1;font-size:12px;color:var(--muted)}
   .filters{position:sticky;top:0;background:var(--paper);padding:6px 0;z-index:5}
   .sheet{top:auto;bottom:0;left:0;transform:translateY(12px);width:100%;border-radius:18px 18px 0 0;max-height:94%}
@@ -300,6 +307,18 @@ details.card .inner{padding:0 18px 16px}
 }
 @media (max-width:420px){ .row3{grid-template-columns:1fr 1fr} .row3 .fld:first-child{grid-column:1/-1} }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation-duration:.01ms!important} }
+
+/* Arabic */
+html[lang=ar] body{font-family:"Tajawal","IBM Plex Sans",system-ui,"Segoe UI",Arial,sans-serif;font-size:16px;line-height:1.65}
+html[lang=ar] h1,html[lang=ar] h2,html[lang=ar] .hero .v,html[lang=ar] .brand small,html[lang=ar] .amount input,html[lang=ar] .auth .brand small{letter-spacing:0}
+html[lang=ar] .pill{padding:3px 10px;font-size:13px}
+html[lang=ar] .hint,html[lang=ar] .small,html[lang=ar] .tx .s,html[lang=ar] .prow .c,html[lang=ar] .step .d{font-size:13px}
+html[lang=ar] .fld .lbl{font-size:14px}
+html[lang=ar] .fld .lbl em{font-size:12.5px}
+html[lang=ar] .nav button,html[lang=ar] .btn{font-weight:500}
+html[lang=ar] .side .who{font-size:13px}
+html[lang=ar] .tabbar button{font-size:12px}
+.ltr{direction:ltr;unicode-bidi:isolate}
 </style>
 </head>
 <body>
@@ -316,11 +335,15 @@ details.card .inner{padding:0 18px 16px}
    Data: Supabase (built-in project below; can be overridden in
    Settings). Offline mode keeps nothing and is only offered when
    the database can't be reached.
+   Languages: every visible string lives in STR below; stored
+   values stay English in the database and are translated for
+   display through the L() maps.
    ============================================================ */
 const DEFAULT_SB = {
   url: 'https://fesycrujoyffvvvdlzuq.supabase.co',
   key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3ljcnVqb3lmZnZ2dmRsenVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDc2MjQsImV4cCI6MjA5NzE4MzYyNH0.yeIh4ZFG024RDCj2iV7Ur4aiQtiEml1GgX1G2dD0JWM'
 };
+const APP_VERSION = '1.3.0';
 const I = {
   home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
   list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
@@ -334,17 +357,174 @@ const I = {
   down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>'
 };
-const APP_VERSION = '1.2.0';
+
+/* ---------- languages ---------- */
+let LANG = document.documentElement.lang === 'ar' ? 'ar' : 'en';
+const STR = {
+en: {
+  title:'Fennec Productions — Finance', tagline:'Production finance',
+  nav_home:'Home', nav_tx:'Ledger', nav_projects:'Productions', nav_invoices:'Invoices', nav_settings:'Settings',
+  addEntry:'Add entry', cancel:'Cancel', saveChanges:'Save changes', delete:'Delete', close:'Close', optional:'optional', lyd:'LYD',
+  live:'Live', offlineShort:'Offline — nothing is saved', loading:'Loading your books…', language:'Language', switchLang:'العربية',
+  email:'Email', password:'Password', signIn:'Sign in', accountsNote:'Accounts are created by the owner. Ask them if you need access.',
+  errEmail:'Enter your email', errPass:'Enter your password',
+  e_dup:'That number is already used by another invoice', e_expired:'Your sign-in expired — please sign in again', e_net:'No connection — check your internet and try again',
+  e_login:'Wrong email or password', e_unconfirmed:'This email has not been confirmed yet', e_lib:'Database library did not load — working offline, nothing is saved',
+  errTitle:"Couldn't load your books", errHint:'If this keeps happening, check that <code>schema.sql</code> has been run in the connected Supabase project.',
+  retry:'Try again', signInAgain:'Sign in again', continueOffline:'Continue offline (nothing is saved)',
+  welcome:'Welcome to Fennec', fresh:'Your books are empty. Three steps and the dashboard comes alive — each takes under a minute.',
+  step1:'Add a production', step1d:'Name, client and budget. Overheads can go without one.', add:'Add',
+  step2:'Log what you paid or received', step2d:'Amount, who, and what for. Any currency.',
+  step3:'Raise an invoice', step3d:'Track what clients owe and record payments against it.', newInvoice:'New invoice',
+  offlineBanner:'Offline — nothing you enter is saved.', offlineBanner2:'Reconnect from {link} when you\'re back online.',
+  heroL:'What we have after all money in and out', received:'received', spent:'spent',
+  cash:'Cash in hand', bank:'In the bank', cheques:'Cheques pending', owed:'Owed to us by clients', active:'Productions in progress',
+  overdueN:{one:'{n} overdue', other:'{n} overdue'},
+  productions:'Productions', nOpen:'{n} open', latest:'Latest entries', seeAll:'See all', whereMoney:'Where the money went', allTime:'all time',
+  noSpending:'No spending yet', nothingLogged:'Nothing logged yet',
+  noProductions:'No productions yet.', addProduction:'Add a production', newProduction:'New production',
+  spentOf:'<b>{a}</b> spent of {b}', left:'{n} left', over:'<b style="color:var(--out)">{n} over</b>', profit:'profit', lossSoFar:'loss so far',
+  ledger:'Ledger', entries:{one:'{n} entry', other:'{n} entries'}, allProjects:'All productions', noProjectFilter:'No production (overhead)',
+  everything:'Everything', receivedF:'Received', spentF:'Spent', searchPh:'Search payee, description, receipt', searchAria:'Search entries',
+  filterProject:'Filter by production', filterDir:'Filter by direction',
+  noMatch:'No entries match these filters.', nothingHere:'Nothing here yet.', logFirst:'Log the first entry', noProject:'No production',
+  invoices:'Invoices', createFirst:'Create the first invoice', noInvoices:'No invoices yet.', due:'Due {d}', unpaid:'{n} unpaid',
+  invHint:'Open an invoice and tap <b>Record payment</b> when a client pays — the unpaid amount updates and the invoice is marked paid once settled.',
+  database:'Database', connected:'Connected', signedInAs:'Signed in as {e}', custom:'(custom)', useDefault:'Use default database', signOut:'Sign out',
+  offlineCard:'Offline — nothing is saved.', reconnectHint:'Reconnect to get back to your books.', reconnect:'Reconnect',
+  useOther:'Use a different Supabase project', projectUrl:'Project URL', anonKey:'Anon public key',
+  connHint:'Run <code>schema.sql</code> in that project first. The connection is tested before it\'s saved.', testConnect:'Test & connect',
+  appearance:'Appearance', th_system:'System', th_light:'Light', th_dark:'Dark',
+  fxTitle:'Exchange rates to LYD', fxHint:'Suggested when you add a foreign-currency entry. Each entry keeps the rate you confirmed, so history never shifts.', saveRates:'Save rates',
+  categories:'Categories', name:'Name', inOut:'In/Out', department:'Department', newCategory:'New category', catPh:'e.g. Insurance',
+  direction:'Direction', addCategory:'Add category', payees:'Payees', noPayees:'None yet — payees you type in entries can be saved here for quick picking.',
+  newPayee:'New payee', payeePh:'e.g. Tripoli Camera House', addPayee:'Add payee', removeX:'Remove {x}',
+  errUrl:'Looks like https://xxxx.supabase.co', errKey:'Paste the anon public key', libNotLoaded:'Database library did not load',
+  useDefaultTitle:'Use the default database?', useDefaultBody:'This browser will switch back to the built-in Fennec project. No data is deleted.', switch:'Switch',
+  ratesSaved:'Rates saved', errRate:'Enter a rate above 0', errCatName:'Give the category a name', catExists:'That category already exists', catAdded:'Category added',
+  removeCat:'Remove "{x}"?', catUsed:{one:'{n} entry uses it. It keeps the name, but it won\'t be offered for new entries.', other:'{n} entries use it. They keep the name, but it won\'t be offered for new entries.'},
+  canReadd:'It can be added again later.', remove:'Remove', catRemoved:'Category removed', errPayee:'Enter a name', payeeExists:'Already in the list', payeeAdded:'Payee added', payeeRemoved:'Payee removed',
+  couldNotSave:'Could not save: {m}',
+  editEntry:'Edit entry', newEntry:'New entry', wePaid:'We paid', weReceived:'We received', amount:'Amount', currency:'Currency', rateTo:'Rate to LYD', fxEq:'→',
+  at:'@', date:'Date', paidBy:'Paid by', production:'Production', noProductionOverhead:'No production (overhead)', category:'Category', who:'Who', whoPh:'Person or company',
+  forWhat:'For what', forWhatPh:'e.g. Fuel for the desert shoot', receipt:'Receipt ref', settles:'Settles invoice',
+  errAmount:'Enter an amount above 0', errDate:'Pick a date', errCat:'Add a category in Settings first', errRateT:'Enter an exchange rate above 0',
+  saved:'Saved', entryAdded:'Entry added', deleteEntry:'Delete this entry?', cannotUndo:'This cannot be undone.', deleted:'Deleted', markedPaid:'{n} marked paid',
+  editProduction:'Edit production', spentL:'Spent', receivedL:'Received', profitSoFar:'Profit so far', lossSoFarL:'Loss so far',
+  prodName:'Production name', prodNamePh:'e.g. Desert Roads — brand film', client:'Client', clientPh:'Who is it for?', status:'Status', budget:'Budget',
+  notes:'Notes', notesPh:'Delivery dates, contract terms…', viewLedger:'View ledger', createProduction:'Create production',
+  errProdName:'Give the production a name', errBudget:'Enter a valid budget', productionCreated:'Production created', deleteX:'Delete "{x}"?',
+  prodEntriesStay:{one:'Its {n} entry stays in the ledger as overhead (no production).', other:'Its {n} entries stay in the ledger as overhead (no production).'},
+  editInvoice:'Edit invoice', paidL:'Paid', unpaidL:'Unpaid', invNumber:'Invoice number', noProductionS:'No production', clientBilled:'Who is being billed?',
+  issued:'Issued', dueL:'Due', recordPayment:'Record payment', createInvoice:'Create invoice', errInvNum:'Enter an invoice number', invNumUsed:'That number is already used',
+  errIssued:'Pick the issue date', errDue:'Due date is before the issue date', invoiceCreated:'Invoice created', deleteInv:'Delete {n}?',
+  paymentsStay:{one:'{n} payment stays in the ledger but no longer points to this invoice.', other:'{n} payments stay in the ledger but no longer point to this invoice.'},
+  paymentFor:'Payment for {n}',
+  direction_sel:'Direction', theme_aria:'Theme', lang_aria:'Language', mainNav:'Main',
+  cur:{LYD:'LYD', USD:'USD', EUR:'EUR'}, dirIn:'Received', dirOut:'Spent'
+},
+ar: {
+  title:'Fennec Productions — المالية', tagline:'إدارة مالية الإنتاج',
+  nav_home:'الرئيسية', nav_tx:'دفتر القيود', nav_projects:'الإنتاجات', nav_invoices:'الفواتير', nav_settings:'الإعدادات',
+  addEntry:'إضافة قيد', cancel:'إلغاء', saveChanges:'حفظ التغييرات', delete:'حذف', close:'إغلاق', optional:'اختياري', lyd:'د.ل',
+  live:'متصل', offlineShort:'غير متصل — لا يتم حفظ شيء', loading:'جارٍ تحميل الحسابات…', language:'اللغة', switchLang:'English',
+  email:'البريد الإلكتروني', password:'كلمة المرور', signIn:'تسجيل الدخول', accountsNote:'يُنشئ المالك الحسابات. تواصل معه إذا كنت بحاجة إلى صلاحية الدخول.',
+  errEmail:'أدخل بريدك الإلكتروني', errPass:'أدخل كلمة المرور',
+  e_dup:'هذا الرقم مستخدم في فاتورة أخرى', e_expired:'انتهت جلسة الدخول — يرجى تسجيل الدخول مجددًا', e_net:'لا يوجد اتصال — تحقق من الإنترنت وحاول مجددًا',
+  e_login:'البريد الإلكتروني أو كلمة المرور غير صحيحة', e_unconfirmed:'لم يتم تأكيد هذا البريد الإلكتروني بعد', e_lib:'تعذر تحميل مكتبة قاعدة البيانات — يعمل التطبيق دون اتصال ولا يتم حفظ شيء',
+  errTitle:'تعذر تحميل الحسابات', errHint:'إذا تكرر ذلك، تأكد من تنفيذ <code>schema.sql</code> في مشروع Supabase المتصل.',
+  retry:'حاول مجددًا', signInAgain:'تسجيل الدخول مجددًا', continueOffline:'المتابعة دون اتصال (لا يتم حفظ شيء)',
+  welcome:'مرحبًا بك في Fennec', fresh:'الحسابات فارغة حاليًا. ثلاث خطوات وتظهر لوحة المتابعة — كل خطوة تستغرق أقل من دقيقة.',
+  step1:'أضف إنتاجًا', step1d:'الاسم والعميل والميزانية. المصاريف العامة لا تحتاج إلى إنتاج.', add:'إضافة',
+  step2:'سجّل ما دفعته أو استلمته', step2d:'المبلغ، والجهة، والغرض. بأي عملة.',
+  step3:'أصدر فاتورة', step3d:'تابع مستحقاتك لدى العملاء وسجّل الدفعات عليها.', newInvoice:'فاتورة جديدة',
+  offlineBanner:'غير متصل — لا يتم حفظ ما تُدخله.', offlineBanner2:'أعد الاتصال من {link} عند عودة الإنترنت.',
+  heroL:'ما لدينا بعد كل ما دخل وخرج', received:'مستلم', spent:'مصروف',
+  cash:'النقد في الصندوق', bank:'في البنك', cheques:'شيكات معلّقة', owed:'مستحق لنا من العملاء', active:'إنتاجات قيد التنفيذ',
+  overdueN:{zero:'لا متأخرات', one:'فاتورة متأخرة', two:'فاتورتان متأخرتان', few:'{n} فواتير متأخرة', many:'{n} فاتورة متأخرة', other:'{n} فاتورة متأخرة'},
+  productions:'الإنتاجات', nOpen:'{n} مفتوح', latest:'آخر القيود', seeAll:'عرض الكل', whereMoney:'أين ذهبت الأموال', allTime:'منذ البداية',
+  noSpending:'لا مصروفات بعد', nothingLogged:'لم يُسجَّل شيء بعد',
+  noProductions:'لا إنتاجات بعد.', addProduction:'إضافة إنتاج', newProduction:'إنتاج جديد',
+  spentOf:'صُرف <b>{a}</b> من {b}', left:'متبقٍ {n}', over:'<b style="color:var(--out)">تجاوز بـ {n}</b>', profit:'ربح', lossSoFar:'خسارة حتى الآن',
+  ledger:'دفتر القيود', entries:{zero:'لا قيود', one:'قيد واحد', two:'قيدان', few:'{n} قيود', many:'{n} قيدًا', other:'{n} قيد'}, allProjects:'كل الإنتاجات', noProjectFilter:'بدون إنتاج (مصاريف عامة)',
+  everything:'الكل', receivedF:'المستلم', spentF:'المصروف', searchPh:'ابحث بالجهة أو الوصف أو رقم الإيصال', searchAria:'بحث في القيود',
+  filterProject:'تصفية حسب الإنتاج', filterDir:'تصفية حسب الاتجاه',
+  noMatch:'لا قيود تطابق هذه التصفية.', nothingHere:'لا شيء هنا بعد.', logFirst:'سجّل أول قيد', noProject:'بدون إنتاج',
+  invoices:'الفواتير', createFirst:'أنشئ أول فاتورة', noInvoices:'لا فواتير بعد.', due:'تستحق {d}', unpaid:'{n} غير مدفوع',
+  invHint:'افتح الفاتورة واضغط <b>تسجيل دفعة</b> عندما يدفع العميل — يتحدّث المبلغ غير المدفوع وتُعلَّم الفاتورة مدفوعة عند السداد.',
+  database:'قاعدة البيانات', connected:'متصل', signedInAs:'مسجّل الدخول باسم {e}', custom:'(مخصص)', useDefault:'استخدام قاعدة البيانات الافتراضية', signOut:'تسجيل الخروج',
+  offlineCard:'غير متصل — لا يتم حفظ شيء.', reconnectHint:'أعد الاتصال للعودة إلى حساباتك.', reconnect:'إعادة الاتصال',
+  useOther:'استخدام مشروع Supabase آخر', projectUrl:'رابط المشروع', anonKey:'المفتاح العام (anon)',
+  connHint:'نفّذ <code>schema.sql</code> في ذلك المشروع أولًا. يُختبر الاتصال قبل الحفظ.', testConnect:'اختبار واتصال',
+  appearance:'المظهر', th_system:'تلقائي', th_light:'فاتح', th_dark:'داكن',
+  fxTitle:'أسعار الصرف إلى الدينار', fxHint:'تُقترح عند إضافة قيد بعملة أجنبية. يحتفظ كل قيد بالسعر الذي أكدته، فلا يتغير السجل لاحقًا.', saveRates:'حفظ الأسعار',
+  categories:'التصنيفات', name:'الاسم', inOut:'النوع', department:'القسم', newCategory:'تصنيف جديد', catPh:'مثال: التأمين',
+  direction:'الاتجاه', addCategory:'إضافة تصنيف', payees:'الجهات', noPayees:'لا جهات بعد — يمكنك حفظ الجهات هنا لاختيارها بسرعة عند إدخال القيود.',
+  newPayee:'جهة جديدة', payeePh:'مثال: بيت الكاميرا طرابلس', addPayee:'إضافة جهة', removeX:'إزالة {x}',
+  errUrl:'يجب أن يكون بالشكل https://xxxx.supabase.co', errKey:'الصق المفتاح العام (anon)', libNotLoaded:'تعذر تحميل مكتبة قاعدة البيانات',
+  useDefaultTitle:'استخدام قاعدة البيانات الافتراضية؟', useDefaultBody:'سيعود هذا المتصفح إلى مشروع Fennec المدمج. لن تُحذف أي بيانات.', switch:'تبديل',
+  ratesSaved:'تم حفظ الأسعار', errRate:'أدخل سعرًا أكبر من 0', errCatName:'أدخل اسم التصنيف', catExists:'هذا التصنيف موجود مسبقًا', catAdded:'تمت إضافة التصنيف',
+  removeCat:'إزالة «{x}»؟', catUsed:{one:'يستخدمه قيد واحد. سيحتفظ بالاسم، لكنه لن يُعرض للقيود الجديدة.', two:'يستخدمه قيدان. سيحتفظان بالاسم، لكنه لن يُعرض للقيود الجديدة.', few:'تستخدمه {n} قيود. ستحتفظ بالاسم، لكنه لن يُعرض للقيود الجديدة.', many:'يستخدمه {n} قيدًا. ستحتفظ بالاسم، لكنه لن يُعرض للقيود الجديدة.', other:'يستخدمه {n} قيد. ستحتفظ بالاسم، لكنه لن يُعرض للقيود الجديدة.'},
+  canReadd:'يمكن إضافته مجددًا لاحقًا.', remove:'إزالة', catRemoved:'تمت إزالة التصنيف', errPayee:'أدخل اسمًا', payeeExists:'موجود في القائمة', payeeAdded:'تمت إضافة الجهة', payeeRemoved:'تمت إزالة الجهة',
+  couldNotSave:'تعذر الحفظ: {m}',
+  editEntry:'تعديل القيد', newEntry:'قيد جديد', wePaid:'دفعنا', weReceived:'استلمنا', amount:'المبلغ', currency:'العملة', rateTo:'سعر الصرف إلى الدينار', fxEq:'=',
+  at:'×', date:'التاريخ', paidBy:'طريقة الدفع', production:'الإنتاج', noProductionOverhead:'بدون إنتاج (مصاريف عامة)', category:'التصنيف', who:'الجهة', whoPh:'شخص أو شركة',
+  forWhat:'الغرض', forWhatPh:'مثال: وقود لتصوير الصحراء', receipt:'رقم الإيصال', settles:'تسديد فاتورة',
+  errAmount:'أدخل مبلغًا أكبر من 0', errDate:'اختر التاريخ', errCat:'أضف تصنيفًا من الإعدادات أولًا', errRateT:'أدخل سعر صرف أكبر من 0',
+  saved:'تم الحفظ', entryAdded:'تمت إضافة القيد', deleteEntry:'حذف هذا القيد؟', cannotUndo:'لا يمكن التراجع عن هذا.', deleted:'تم الحذف', markedPaid:'عُلّمت الفاتورة {n} مدفوعة',
+  editProduction:'تعديل الإنتاج', spentL:'المصروف', receivedL:'المستلم', profitSoFar:'الربح حتى الآن', lossSoFarL:'الخسارة حتى الآن',
+  prodName:'اسم الإنتاج', prodNamePh:'مثال: طرق الصحراء — فيلم دعائي', client:'العميل', clientPh:'لمن هذا الإنتاج؟', status:'الحالة', budget:'الميزانية',
+  notes:'ملاحظات', notesPh:'مواعيد التسليم، شروط العقد…', viewLedger:'عرض القيود', createProduction:'إنشاء إنتاج',
+  errProdName:'أدخل اسم الإنتاج', errBudget:'أدخل ميزانية صحيحة', productionCreated:'تم إنشاء الإنتاج', deleteX:'حذف «{x}»؟',
+  prodEntriesStay:{one:'يبقى قيده الوحيد في الدفتر كمصاريف عامة (بدون إنتاج).', two:'يبقى قيداه في الدفتر كمصاريف عامة (بدون إنتاج).', few:'تبقى قيوده ({n}) في الدفتر كمصاريف عامة (بدون إنتاج).', many:'تبقى قيوده ({n}) في الدفتر كمصاريف عامة (بدون إنتاج).', other:'تبقى قيوده ({n}) في الدفتر كمصاريف عامة (بدون إنتاج).'},
+  editInvoice:'تعديل الفاتورة', paidL:'المدفوع', unpaidL:'غير المدفوع', invNumber:'رقم الفاتورة', noProductionS:'بدون إنتاج', clientBilled:'من الذي تُصدر له الفاتورة؟',
+  issued:'تاريخ الإصدار', dueL:'تاريخ الاستحقاق', recordPayment:'تسجيل دفعة', createInvoice:'إنشاء فاتورة', errInvNum:'أدخل رقم الفاتورة', invNumUsed:'هذا الرقم مستخدم مسبقًا',
+  errIssued:'اختر تاريخ الإصدار', errDue:'تاريخ الاستحقاق قبل تاريخ الإصدار', invoiceCreated:'تم إنشاء الفاتورة', deleteInv:'حذف الفاتورة {n}؟',
+  paymentsStay:{one:'تبقى الدفعة الوحيدة في الدفتر لكنها لن ترتبط بهذه الفاتورة.', two:'تبقى الدفعتان في الدفتر لكنهما لن ترتبطا بهذه الفاتورة.', few:'تبقى الدفعات ({n}) في الدفتر لكنها لن ترتبط بهذه الفاتورة.', many:'تبقى الدفعات ({n}) في الدفتر لكنها لن ترتبط بهذه الفاتورة.', other:'تبقى الدفعات ({n}) في الدفتر لكنها لن ترتبط بهذه الفاتورة.'},
+  paymentFor:'دفعة للفاتورة {n}',
+  direction_sel:'الاتجاه', theme_aria:'المظهر', lang_aria:'اللغة', mainNav:'القائمة الرئيسية',
+  cur:{LYD:'د.ل', USD:'دولار', EUR:'يورو'}, dirIn:'مستلم', dirOut:'مصروف'
+}};
+/* display names for values that are stored in English */
+const LBL = {
+  ar: {
+    status:{Pitching:'عرض مقدَّم',Active:'قيد التنفيذ',Delivered:'تم التسليم',Closed:'مغلق',Draft:'مسودة',Sent:'مُرسلة',Paid:'مدفوعة',Cancelled:'ملغاة',Overdue:'متأخرة'},
+    method:{Cash:'نقدًا','Bank Transfer':'تحويل بنكي',Cheque:'شيك',Card:'بطاقة'},
+    dept:{Production:'الإنتاج',Post:'ما بعد الإنتاج',Overhead:'مصاريف عامة',Revenue:'الإيرادات',Other:'أخرى'},
+    cat:{'Crew & Talent':'الطاقم والممثلون','Equipment':'المعدات','Locations & Permits':'المواقع والتصاريح','Transport & Fuel':'النقل والوقود','Catering & Accommodation':'الإعاشة والإقامة','Travel':'السفر','Post-Production':'ما بعد الإنتاج','Office & Admin':'المكتب والإدارة','Marketing':'التسويق','Bank & FX Fees':'رسوم بنكية وصرف','Other Expense':'مصروفات أخرى','Client Payment':'دفعة من عميل','Deposit / Advance':'عربون / دفعة مقدمة','Grant / Sponsorship':'منحة / رعاية','Other Income':'إيرادات أخرى'},
+    payee:{'Petty Cash':'النثرية'}
+  },
+  en: { status:{}, method:{}, dept:{}, cat:{}, payee:{} }
+};
+const PR = { en:new Intl.PluralRules('en'), ar:new Intl.PluralRules('ar') };
+function t(key, vars){
+  let v = STR[LANG][key]; if (v === undefined) v = STR.en[key]; if (v === undefined) return key;
+  if (typeof v === 'object' && vars && 'n' in vars){ const cat = PR[LANG].select(vars.n); v = v[cat] ?? v.other ?? v.one; }
+  if (vars) for (const k in vars) v = v.split('{'+k+'}').join(vars[k]);
+  return v;
+}
+const L = (group, value) => (LBL[LANG][group] && LBL[LANG][group][value]) || value;
+const isAr = () => LANG === 'ar';
+const LOC = () => isAr() ? 'ar-LY-u-nu-latn' : 'en-GB';
+function setLang(l){
+  LANG = l === 'ar' ? 'ar' : 'en'; store.set('lang', LANG);
+  document.documentElement.lang = LANG; document.documentElement.dir = isAr() ? 'rtl' : 'ltr'; document.title = t('title');
+  if (D) render(); else if ($('#auth-form')) renderAuth(); else if ($('#e-retry')) location.reload();
+}
+
 const STATUS = ['Pitching','Active','Delivered','Closed'];
 const INV_STATUS = ['Draft','Sent','Paid','Cancelled'];
 const METHODS = ['Cash','Bank Transfer','Cheque','Card'];
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-'+Math.random().toString(36).slice(2));
 const today = () => { const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
 const r2 = n => Math.round((Number(n)||0)*100)/100;
-const fmt = n => { n = r2(n); const s = Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:2}); return n<0?`−${s}`:s; };
-const fmtD = d => d ? new Date(d+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
-const fmtDL = d => d ? new Date(d+'T00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'}) : '';
+const LRM = '‎';   // keeps "−1,250" reading left-to-right inside Arabic text
+const fmt = n => { n = r2(n); const s = Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:2}); return n<0?`${LRM}−${s}`:s; };
+const signed = (isIn, n) => `${LRM}${isIn?'+':'−'}${fmt(Math.abs(n))}`;
+const fmtD = d => d ? new Date(d+'T00:00').toLocaleDateString(LOC(),{day:'numeric',month:'short'}) : '';
+const fmtDL = d => d ? new Date(d+'T00:00').toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'long',year:'numeric'}) : '';
 const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ltr = s => `<bdi class="ltr">${esc(s)}</bdi>`;
 const store = { get(k){ try{return localStorage.getItem(k)}catch(e){return null} }, set(k,v){ try{localStorage.setItem(k,v)}catch(e){} }, del(k){ try{localStorage.removeItem(k)}catch(e){} } };
 const $ = s => document.querySelector(s);
 const app = $('#app');
@@ -397,7 +577,6 @@ function SupaDB(url,key){
     async saveSetting(k,v){ const {error}=await sb.from('settings').upsert({key:k,value:v,updated_at:new Date().toISOString()}); if(error) throw error; }
   };
 }
-/* Try a project URL + key before saving them. Resolves to an error message or null. */
 async function testConnection(url,key){
   try{
     const sb = window.supabase.createClient(url,key);
@@ -410,27 +589,27 @@ async function testConnection(url,key){
 /* ---------- app state ---------- */
 let DB, D = null, page = store.get('page')||'home', txFilter = {project:'',dir:'',q:''};
 const amountLYD = t => Number(t.amount_lyd ?? (t.amount * (t.fx_rate||1)));
-const projName = id => (D.projects.find(p=>p.id===id)||{}).name || 'No project';
+const projName = id => (D.projects.find(p=>p.id===id)||{}).name || t('noProject');
 const dept = cat => (D.settings.categories.find(c=>c.name===cat)||{}).department || 'Other';
-let toastT; function toast(msg,err){ const t=$('#toast'); t.textContent=msg; t.classList.toggle('err',!!err); t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),err?3600:2200); }
+let toastT; function toast(msg,err){ const el=$('#toast'); el.textContent=msg; el.classList.toggle('err',!!err); el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),err?3600:2200); }
 function friendlyError(e){
   const m=(e&&e.message)||String(e);
-  if(/23505/.test(e?.code||'')||/duplicate key/i.test(m)) return 'That number is already used by another invoice';
-  if(/JWT|session|expired|Invalid Refresh/i.test(m)) return 'Your sign-in expired — please sign in again';
-  if(/Failed to fetch|NetworkError|network/i.test(m)) return 'No connection — check your internet and try again';
-  if(/Invalid login credentials/i.test(m)) return 'Wrong email or password';
-  if(/Email not confirmed/i.test(m)) return 'This email has not been confirmed yet';
+  if(/23505/.test(e?.code||'')||/duplicate key/i.test(m)) return t('e_dup');
+  if(/JWT|session|expired|Invalid Refresh/i.test(m)) return t('e_expired');
+  if(/Failed to fetch|NetworkError|network/i.test(m)) return t('e_net');
+  if(/Invalid login credentials/i.test(m)) return t('e_login');
+  if(/Email not confirmed/i.test(m)) return t('e_unconfirmed');
   return m;
 }
-function applyTheme(){ const t=store.get('theme'); if(t==='light'||t==='dark') document.documentElement.dataset.theme=t; else delete document.documentElement.dataset.theme; }
+function applyTheme(){ const th=store.get('theme'); if(th==='light'||th==='dark') document.documentElement.dataset.theme=th; else delete document.documentElement.dataset.theme; }
 
 async function boot(){
-  applyTheme();
+  applyTheme(); document.title = t('title');
   const ovUrl=store.get('sb_url'), ovKey=store.get('sb_key');
   const cfg = (ovUrl&&ovKey) ? {url:ovUrl,key:ovKey} : DEFAULT_SB;
   if(store.get('offline')==='1' || !window.supabase){
     DB = LocalDB; await DB.init(); await reload();
-    if(!window.supabase) toast('Database library did not load — working offline, nothing is saved',true);
+    if(!window.supabase) toast(t('e_lib'),true);
     return;
   }
   DB = SupaDB(cfg.url,cfg.key);
@@ -467,18 +646,20 @@ function nextInvoiceNumber(){
 }
 
 /* ---------- rendering ---------- */
+const langBtn = (id) => `<button class="lang-btn" id="${id}" lang="${isAr()?'en':'ar'}" dir="${isAr()?'ltr':'rtl'}">${t('switchLang')}</button>`;
 function shell(content){
-  const items=[['home','Home',I.home],['tx','Ledger',I.list],['projects','Productions',I.film],['invoices','Invoices',I.doc],['settings','Settings',I.cog]];
+  const items=[['home',t('nav_home'),I.home],['tx',t('nav_tx'),I.list],['projects',t('nav_projects'),I.film],['invoices',t('nav_invoices'),I.doc],['settings',t('nav_settings'),I.cog]];
   const nav=()=>items.map(([k,l,ic])=>`<button class="${page===k?'on':''}" data-nav="${k}" ${page===k?'aria-current="page"':''}>${ic}<span>${l}</span></button>`).join('');
-  const who = DB.mode==='supabase' ? `<span><span class="dot"></span>Live</span><b title="${esc(DB.user?.email||'')}">${esc(DB.user?.email||'')}</b>` : `<span><span class="dot off"></span>Offline — nothing is saved</span>`;
+  const who = DB.mode==='supabase' ? `<span><span class="dot"></span>${t('live')}</span><b title="${esc(DB.user?.email||'')}">${ltr(DB.user?.email||'')}</b>` : `<span><span class="dot off"></span>${t('offlineShort')}</span>`;
   app.innerHTML=`<div class="shell">
-    <aside class="side"><div class="brand"><img src="logo.png" alt="Fennec Productions"></div><nav class="nav" aria-label="Main">${nav()}</nav>
-      <div class="spacer"></div><div class="who">${who}<span class="ver">v${APP_VERSION}</span></div></aside>
+    <aside class="side"><div class="brand"><img src="logo.png" alt="Fennec Productions"></div><nav class="nav" aria-label="${t('mainNav')}">${nav()}</nav>
+      <div class="spacer"></div><div class="who">${who}<span class="ver"><span>${ltr('v'+APP_VERSION)}</span>${langBtn('lang-side')}</span></div></aside>
     <main class="main">${content}</main></div>
-    <nav class="tabbar" aria-label="Main">${nav()}</nav>
-    <button class="fab" id="fab" aria-label="Add entry">${I.plus}<span>Add entry</span></button>`;
+    <nav class="tabbar" aria-label="${t('mainNav')}">${nav()}</nav>
+    <button class="fab" id="fab" aria-label="${t('addEntry')}">${I.plus}<span>${t('addEntry')}</span></button>`;
   app.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>go(b.dataset.nav));
   $('#fab').onclick=()=>openTx();
+  $('#lang-side').onclick=()=>setLang(isAr()?'en':'ar');
 }
 function go(p){ page=p; store.set('page',p); render(); window.scrollTo(0,0); }
 function render(){
@@ -489,160 +670,164 @@ function render(){
   shell(views[page](s));
   bind(s);
 }
-function renderLoading(){ app.innerHTML=`<div class="loading"><div><div class="spin"></div>Loading your books…</div></div>`; }
+function renderLoading(){ app.innerHTML=`<div class="loading"><div><div class="spin"></div>${t('loading')}</div></div>`; }
 
 function homeView(s){
   const recent=[...D.transactions].sort((a,b)=>b.date.localeCompare(a.date)||String(b.created_at||'').localeCompare(String(a.created_at||''))).slice(0,8);
   const dsum=Object.values(s.depts).reduce((a,b)=>a+b,0);
   const open=s.projects.filter(p=>p.status!=='Closed');
-  const dateStr=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  const dateStr=new Date().toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'});
   const fresh=!D.projects.length&&!D.invoices.length&&!D.transactions.length;
-  const offline=DB.mode==='local'?`<div class="callout warn" style="margin-bottom:18px"><b>Offline — nothing you enter is saved.</b><span>Reconnect from <a href="#" data-nav="settings">Settings</a> when you're back online.</span></div>`:'';
-  if(fresh) return `<div class="topbar"><h1>Welcome to Fennec</h1><span class="muted small">${dateStr}</span></div>${offline}
-    <p class="muted" style="margin:0 0 16px;max-width:52ch">Your books are empty. Three steps and the dashboard comes alive — each takes under a minute.</p>
+  const offline=DB.mode==='local'?`<div class="callout warn" style="margin-bottom:18px"><b>${t('offlineBanner')}</b><span>${t('offlineBanner2',{link:`<a href="#" data-nav="settings">${t('nav_settings')}</a>`})}</span></div>`:'';
+  if(fresh) return `<div class="topbar"><h1>${t('welcome')}</h1><span class="muted small">${dateStr}</span></div>${offline}
+    <p class="muted" style="margin:0 0 16px;max-width:52ch">${t('fresh')}</p>
     <div class="steps" style="max-width:560px">
-      <div class="step"><div class="n">1</div><div><div class="t">Add a production</div><div class="d">Name, client and budget. Overheads can go without one.</div></div><button class="btn primary sm" id="add-proj">Add</button></div>
-      <div class="step"><div class="n">2</div><div><div class="t">Log what you paid or received</div><div class="d">Amount, who, and what for. Any currency.</div></div><button class="btn sm" id="hs-tx">Add entry</button></div>
-      <div class="step"><div class="n">3</div><div><div class="t">Raise an invoice</div><div class="d">Track what clients owe and record payments against it.</div></div><button class="btn sm" id="add-inv">New invoice</button></div>
+      <div class="step"><div class="n">1</div><div><div class="t">${t('step1')}</div><div class="d">${t('step1d')}</div></div><button class="btn primary sm" id="add-proj">${t('add')}</button></div>
+      <div class="step"><div class="n">2</div><div><div class="t">${t('step2')}</div><div class="d">${t('step2d')}</div></div><button class="btn sm" id="hs-tx">${t('addEntry')}</button></div>
+      <div class="step"><div class="n">3</div><div><div class="t">${t('step3')}</div><div class="d">${t('step3d')}</div></div><button class="btn sm" id="add-inv">${t('newInvoice')}</button></div>
     </div>`;
   return `<div class="topbar"><h1>Fennec Productions</h1><span class="muted small">${dateStr}</span></div>${offline}
   <section class="statement">
-    <div class="hero"><div class="l">What we have after all money in and out</div><div class="v num ${s.net<0?'neg':''}">${fmt(s.net)}<small>LYD</small></div>
-      <div class="sub"><b class="num">${fmt(s.inc)}</b> received · <b class="num">${fmt(s.exp)}</b> spent</div></div>
+    <div class="hero"><div class="l">${t('heroL')}</div><div class="v num ${s.net<0?'neg':''}">${fmt(s.net)}<small>${t('lyd')}</small></div>
+      <div class="sub"><b class="num">${fmt(s.inc)}</b> ${t('received')} · <b class="num">${fmt(s.exp)}</b> ${t('spent')}</div></div>
     <ul class="facts">
-      <li><span>Cash in hand</span><b class="num">${fmt(s.cash)}</b></li>
-      <li><span>In the bank</span><b class="num">${fmt(s.bank)}</b></li>
-      ${s.cheques?`<li><span>Cheques pending</span><b class="num">${fmt(s.cheques)}</b></li>`:''}
-      <li><span>Owed to us by clients</span><b class="num">${fmt(s.outstanding)}${s.overdue?`<i data-nav="invoices">${s.overdue} overdue</i>`:''}</b></li>
-      <li><span>Productions in progress</span><b>${s.active}</b></li>
+      <li><span>${t('cash')}</span><b class="num">${fmt(s.cash)}</b></li>
+      <li><span>${t('bank')}</span><b class="num">${fmt(s.bank)}</b></li>
+      ${s.cheques?`<li><span>${t('cheques')}</span><b class="num">${fmt(s.cheques)}</b></li>`:''}
+      <li><span>${t('owed')}</span><b class="num">${fmt(s.outstanding)}${s.overdue?`<i data-nav="invoices">${t('overdueN',{n:s.overdue})}</i>`:''}</b></li>
+      <li><span>${t('active')}</span><b>${s.active}</b></li>
     </ul>
   </section>
   <div class="grid two">
     <div>
-      <section class="section"><h2>Productions <span>${open.length} open</span></h2><div class="card">${projectTable(open,true)}</div></section>
-      <section class="section"><h2>Latest entries <span><a href="#" data-nav="tx">See all</a></span></h2><div class="ledger">
-        ${recent.map(t=>txRow(t,true)).join('')||'<div class="empty">Nothing logged yet</div>'}
+      <section class="section"><h2>${t('productions')} <span>${t('nOpen',{n:open.length})}</span></h2><div class="card">${projectTable(open,true)}</div></section>
+      <section class="section"><h2>${t('latest')} <span><a href="#" data-nav="tx">${t('seeAll')}</a></span></h2><div class="ledger">
+        ${recent.map(t=>txRow(t,true)).join('')||`<div class="empty">${t('nothingLogged')}</div>`}
       </div></section>
     </div>
-    <section class="section"><h2>Where the money went <span>all time</span></h2><div class="card">
-      ${Object.entries(s.depts).sort((a,b)=>b[1]-a[1]).map(([d,v])=>`<div class="dept"><span>${esc(d)}</span><span class="num"><b>${fmt(v)}</b> <span class="muted small">${dsum?Math.round(v/dsum*100):0}%</span></span><div class="bar"><i style="width:${dsum?v/dsum*100:0}%"></i></div></div>`).join('')||'<div class="empty">No spending yet</div>'}
+    <section class="section"><h2>${t('whereMoney')} <span>${t('allTime')}</span></h2><div class="card">
+      ${Object.entries(s.depts).sort((a,b)=>b[1]-a[1]).map(([d,v])=>`<div class="dept"><span>${esc(L('dept',d))}</span><span class="num"><b>${fmt(v)}</b> <span class="muted small">${dsum?Math.round(v/dsum*100):0}%</span></span><div class="bar"><i style="width:${dsum?v/dsum*100:0}%"></i></div></div>`).join('')||`<div class="empty">${t('noSpending')}</div>`}
     </div></section>
   </div>`;
 }
-function txRow(t,compact){
+function txRow(x,compact){
   const sub = compact
-    ? `${fmtD(t.date)} · ${esc(projName(t.project_id))}${t.description?' · '+esc(t.description):''}`
-    : `${esc(projName(t.project_id))}${t.description?' · '+esc(t.description):''}${t.receipt?' · '+esc(t.receipt):''}`;
-  const extra = compact ? '' : (t.currency!=='LYD'?`<small>${fmt(t.amount)} ${esc(t.currency)} @ ${t.fx_rate}</small>`:`<small>${esc(t.method)}</small>`);
-  return `<button class="tx" data-tx="${t.id}"><div class="t">${esc(t.payee||'—')}${compact?'':` <span class="muted">· ${esc(t.category)}</span>`}</div><div class="s">${sub}</div>
-    <div class="a num ${t.direction==='In'?'in':''}">${t.direction==='In'?'+':'−'}${fmt(amountLYD(t))}${extra}</div></button>`;
+    ? `${fmtD(x.date)} · ${esc(projName(x.project_id))}${x.description?' · '+esc(x.description):''}`
+    : `${esc(projName(x.project_id))}${x.description?' · '+esc(x.description):''}${x.receipt?' · '+esc(x.receipt):''}`;
+  const extra = compact ? '' : (x.currency!=='LYD'?`<small>${fmt(x.amount)} ${esc(t('cur')[x.currency]||x.currency)} ${t('at')} ${x.fx_rate}</small>`:`<small>${esc(L('method',x.method))}</small>`);
+  return `<button class="tx" data-tx="${x.id}"><div class="t">${esc(L('payee',x.payee)||'—')}${compact?'':` <span class="muted">· ${esc(L('cat',x.category))}</span>`}</div><div class="s">${sub}</div>
+    <div class="a num ${x.direction==='In'?'in':''}">${signed(x.direction==='In',amountLYD(x))}${extra}</div></button>`;
 }
 function projectTable(list,compact){
-  if(!list.length) return `<div class="empty">No productions yet.<button class="btn sm" id="${compact?'hs-proj':'add-proj2'}">Add a production</button></div>`;
+  if(!list.length) return `<div class="empty">${t('noProductions')}<button class="btn sm" id="${compact?'hs-proj':'add-proj2'}">${t('addProduction')}</button></div>`;
   return `<div class="rows">${list.map(p=>`<button class="prow" data-proj="${p.id}">
     <div><div class="n">${esc(p.name)}</div><div class="c">${esc(p.client||'')}</div></div>
-    <div><span class="pill ${p.status}">${p.status}</span></div>
+    <div><span class="pill ${p.status}">${esc(L('status',p.status))}</span></div>
     <div class="bar ${p.used>1?'over':''}"><i style="width:${Math.min(100,p.used*100)}%"></i></div>
-    <div class="m num"><b>${fmt(p.spent)}</b> spent of ${fmt(p.budget)}${p.remaining<0?` · <b style="color:var(--out)">${fmt(-p.remaining)} over</b>`:` · ${fmt(p.remaining)} left`}${compact?'':` · ${p.net>=0?'profit':'loss so far'} <b style="${p.net<0?'color:var(--out)':''}">${fmt(Math.abs(p.net))}</b>`}</div>
+    <div class="m num">${t('spentOf',{a:fmt(p.spent),b:fmt(p.budget)})}${p.remaining<0?` · ${t('over',{n:fmt(-p.remaining)})}`:` · ${t('left',{n:fmt(p.remaining)})}`}${compact?'':` · ${p.net>=0?t('profit'):t('lossSoFar')} <b style="${p.net<0?'color:var(--out)':''}">${fmt(Math.abs(p.net))}</b>`}</div>
   </button>`).join('')}</div>`;
 }
 function txFiltered(){
   let list=[...D.transactions];
-  if(txFilter.project) list=list.filter(t=>(t.project_id||'')===txFilter.project || (txFilter.project==='none'&&!t.project_id));
-  if(txFilter.dir) list=list.filter(t=>t.direction===txFilter.dir);
-  if(txFilter.q){const q=txFilter.q.toLowerCase(); list=list.filter(t=>[t.payee,t.description,t.category,t.receipt,t.amount].join(' ').toLowerCase().includes(q));}
+  if(txFilter.project) list=list.filter(x=>(x.project_id||'')===txFilter.project || (txFilter.project==='none'&&!x.project_id));
+  if(txFilter.dir) list=list.filter(x=>x.direction===txFilter.dir);
+  if(txFilter.q){const q=txFilter.q.toLowerCase(); list=list.filter(x=>[x.payee,L('payee',x.payee),x.description,x.category,L('cat',x.category),x.receipt,x.amount].join(' ').toLowerCase().includes(q));}
   list.sort((a,b)=>b.date.localeCompare(a.date)||String(b.created_at||'').localeCompare(String(a.created_at||'')));
   return list;
 }
 function txListHtml(list){
-  const groups={}; list.forEach(t=>{(groups[t.date]=groups[t.date]||[]).push(t)});
-  if(!Object.keys(groups).length) return `<div class="card empty">${D.transactions.length?'No entries match these filters.':'Nothing here yet.'}${D.transactions.length?'':'<button class="btn sm" id="hs-tx">Log the first entry</button>'}</div>`;
-  return Object.entries(groups).map(([d,arr])=>{const net=r2(arr.reduce((a,t)=>a+(t.direction==='In'?1:-1)*amountLYD(t),0));
-    return `<div class="day"><h3><span>${fmtDL(d)}</span><span class="num">${net>=0?'+':''}${fmt(net)}</span></h3><div class="ledger">${arr.map(t=>txRow(t,false)).join('')}</div></div>`;}).join('');
+  const groups={}; list.forEach(x=>{(groups[x.date]=groups[x.date]||[]).push(x)});
+  if(!Object.keys(groups).length) return `<div class="card empty">${D.transactions.length?t('noMatch'):t('nothingHere')}${D.transactions.length?'':`<button class="btn sm" id="hs-tx">${t('logFirst')}</button>`}</div>`;
+  return Object.entries(groups).map(([d,arr])=>{const net=r2(arr.reduce((a,x)=>a+(x.direction==='In'?1:-1)*amountLYD(x),0));
+    return `<div class="day"><h3><span>${fmtDL(d)}</span><span class="num">${signed(net>=0,net)}</span></h3><div class="ledger">${arr.map(x=>txRow(x,false)).join('')}</div></div>`;}).join('');
 }
+const txCountText = list => { const total=r2(list.reduce((a,x)=>a+(x.direction==='In'?1:-1)*amountLYD(x),0)); return `${t('entries',{n:list.length})} · ${signed(total>=0,total)} ${t('lyd')}`; };
 function txView(){
   const list=txFiltered();
-  const total=r2(list.reduce((a,t)=>a+(t.direction==='In'?1:-1)*amountLYD(t),0));
-  return `<div class="topbar"><h1>Ledger</h1><span class="muted small num" id="tx-count">${list.length} entries · ${total>=0?'+':''}${fmt(total)} LYD</span></div>
+  return `<div class="topbar"><h1>${t('ledger')}</h1><span class="muted small num" id="tx-count">${txCountText(list)}</span></div>
   <div class="filters">
-    <select id="f-proj" aria-label="Filter by project"><option value="">All projects</option>${D.projects.map(p=>`<option value="${p.id}" ${txFilter.project===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}<option value="none" ${txFilter.project==='none'?'selected':''}>No project (overhead)</option></select>
-    <select id="f-dir" aria-label="Filter by direction"><option value="">Everything</option><option value="In" ${txFilter.dir==='In'?'selected':''}>Received</option><option value="Out" ${txFilter.dir==='Out'?'selected':''}>Spent</option></select>
-    <div class="search">${I.search}<input id="f-q" placeholder="Search payee, description, receipt" value="${esc(txFilter.q)}" aria-label="Search entries"></div>
+    <select id="f-proj" aria-label="${t('filterProject')}"><option value="">${t('allProjects')}</option>${D.projects.map(p=>`<option value="${p.id}" ${txFilter.project===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}<option value="none" ${txFilter.project==='none'?'selected':''}>${t('noProjectFilter')}</option></select>
+    <select id="f-dir" aria-label="${t('filterDir')}"><option value="">${t('everything')}</option><option value="In" ${txFilter.dir==='In'?'selected':''}>${t('receivedF')}</option><option value="Out" ${txFilter.dir==='Out'?'selected':''}>${t('spentF')}</option></select>
+    <div class="search">${I.search}<input id="f-q" placeholder="${t('searchPh')}" value="${esc(txFilter.q)}" aria-label="${t('searchAria')}"></div>
   </div>
   <div id="tx-list">${txListHtml(list)}</div>`;
 }
 function projectsView(s){
-  return `<div class="topbar"><h1>Productions</h1><button class="btn primary" id="add-proj">${I.plus}New production</button></div>
+  return `<div class="topbar"><h1>${t('productions')}</h1><button class="btn primary" id="add-proj">${I.plus}${t('newProduction')}</button></div>
   <div class="card">${projectTable(s.projects,false)}</div>`;
 }
 function invoicesView(s){
   const rows=[...s.inv].sort((a,b)=>(b.issued||'').localeCompare(a.issued||''));
-  return `<div class="topbar"><h1>Invoices</h1><button class="btn primary" id="add-inv">${I.plus}New invoice</button></div>
+  return `<div class="topbar"><h1>${t('invoices')}</h1><button class="btn primary" id="add-inv">${I.plus}${t('newInvoice')}</button></div>
   <div class="card">${rows.length?`<div class="rows">${rows.map(i=>`<button class="irow" data-inv="${i.id}">
-    <div><div style="font-weight:500">${esc(i.number)} <span class="muted">· ${esc(i.client||'')}</span></div><div class="d muted small">${esc(projName(i.project_id))}</div></div>
-    <div class="d muted small num" style="${i.overdue?'color:var(--out);font-weight:600':''}">${i.due?'Due '+fmtD(i.due):''}</div>
-    <div class="num" style="text-align:right"><b>${fmt(i.amount)}</b>${i.balance>0&&i.status!=='Draft'&&i.status!=='Cancelled'?`<div class="muted small">${fmt(i.balance)} unpaid</div>`:''}</div>
-    <div style="text-align:right"><span class="pill ${i.overdue?'Overdue':i.status}">${i.overdue?'Overdue':i.status}</span></div>
-  </button>`).join('')}</div>`:`<div class="empty">No invoices yet.<button class="btn sm" id="add-inv2">Create the first invoice</button></div>`}</div>
-  <p class="hint" style="margin-top:10px">Open an invoice and tap <b>Record payment</b> when a client pays — the unpaid amount updates and the invoice is marked paid once settled.</p>`;
+    <div><div style="font-weight:500">${ltr(i.number)} <span class="muted">· ${esc(i.client||'')}</span></div><div class="d muted small">${esc(projName(i.project_id))}</div></div>
+    <div class="d muted small num" style="${i.overdue?'color:var(--out);font-weight:600':''}">${i.due?t('due',{d:fmtD(i.due)}):''}</div>
+    <div class="num" style="text-align:end"><b>${fmt(i.amount)}</b>${i.balance>0&&i.status!=='Draft'&&i.status!=='Cancelled'?`<div class="muted small">${t('unpaid',{n:fmt(i.balance)})}</div>`:''}</div>
+    <div style="text-align:end"><span class="pill ${i.overdue?'Overdue':i.status}">${esc(L('status',i.overdue?'Overdue':i.status))}</span></div>
+  </button>`).join('')}</div>`:`<div class="empty">${t('noInvoices')}<button class="btn sm" id="add-inv2">${t('createFirst')}</button></div>`}</div>
+  <p class="hint" style="margin-top:10px">${t('invHint')}</p>`;
 }
 function settingsView(){
   const fx=D.settings.fx_rates, theme=store.get('theme')||'system', override=!!(store.get('sb_url')&&store.get('sb_key'));
   const host = DB.mode==='supabase' ? DB.url.replace(/^https?:\/\//,'') : '';
   const conn = DB.mode==='supabase'
-    ? `<div class="callout" style="margin-bottom:12px"><b>Connected</b><span>Signed in as ${esc(DB.user?.email||'—')} · <code>${esc(host)}</code>${override?' (custom)':''}</span></div>
-       <div class="actions"><span></span><span class="right">${override?'<button class="btn" id="reset-db">Use default database</button>':''}<button class="btn" id="signout">Sign out</button></span></div>`
-    : `<div class="callout warn" style="margin-bottom:12px"><b>Offline — nothing is saved.</b><span>Reconnect to get back to your books.</span></div>
-       <div class="actions"><span></span><button class="btn primary" id="reconnect">Reconnect</button></div>`;
-  return `<div class="topbar"><h1>Settings</h1></div>
+    ? `<div class="callout" style="margin-bottom:12px"><b>${t('connected')}</b><span>${t('signedInAs',{e:ltr(DB.user?.email||'—')})} · <code>${ltr(host)}</code>${override?' '+t('custom'):''}</span></div>
+       <div class="actions"><span></span><span class="right">${override?`<button class="btn" id="reset-db">${t('useDefault')}</button>`:''}<button class="btn" id="signout">${t('signOut')}</button></span></div>`
+    : `<div class="callout warn" style="margin-bottom:12px"><b>${t('offlineCard')}</b><span>${t('reconnectHint')}</span></div>
+       <div class="actions"><span></span><button class="btn primary" id="reconnect">${t('reconnect')}</button></div>`;
+  return `<div class="topbar"><h1>${t('nav_settings')}</h1></div>
   <div class="grid two">
     <div>
-      <div class="card" style="margin-bottom:14px"><h2>Database</h2>${conn}
-        <details style="margin-top:14px"><summary class="muted small" style="cursor:pointer">Use a different Supabase project</summary>
+      <div class="card" style="margin-bottom:14px"><h2>${t('language')}</h2>
+        <div class="themes two" role="radiogroup" aria-label="${t('lang_aria')}"><button class="${!isAr()?'on':''}" data-lang="en" role="radio" aria-checked="${!isAr()}" lang="en" dir="ltr">English</button><button class="${isAr()?'on':''}" data-lang="ar" role="radio" aria-checked="${isAr()}" lang="ar" dir="rtl">العربية</button></div>
+      </div>
+      <div class="card" style="margin-bottom:14px"><h2>${t('appearance')}</h2>
+        <div class="themes" role="radiogroup" aria-label="${t('theme_aria')}">${['system','light','dark'].map(x=>`<button class="${theme===x?'on':''}" data-theme="${x}" role="radio" aria-checked="${theme===x}">${t('th_'+x)}</button>`).join('')}</div>
+      </div>
+      <div class="card" style="margin-bottom:14px"><h2>${t('database')}</h2>${conn}
+        <details style="margin-top:14px"><summary class="muted small" style="cursor:pointer">${t('useOther')}</summary>
           <div class="f" style="margin-top:12px">
-            <div class="fld"><span class="lbl">Project URL</span><input id="sb-url" placeholder="https://xxxx.supabase.co" autocomplete="off"><small class="err"></small></div>
-            <div class="fld"><span class="lbl">Anon public key</span><input id="sb-key" placeholder="eyJ…" autocomplete="off"><small class="err"></small></div>
-            <div class="hint">Run <code>schema.sql</code> in that project first. The connection is tested before it's saved.</div>
-            <div class="actions"><span></span><button class="btn primary" id="connect">Test &amp; connect</button></div>
+            <div class="fld"><span class="lbl">${t('projectUrl')}</span><input id="sb-url" placeholder="https://xxxx.supabase.co" autocomplete="off" dir="ltr"><small class="err"></small></div>
+            <div class="fld"><span class="lbl">${t('anonKey')}</span><input id="sb-key" placeholder="eyJ…" autocomplete="off" dir="ltr"><small class="err"></small></div>
+            <div class="hint">${t('connHint')}</div>
+            <div class="actions"><span></span><button class="btn primary" id="connect">${t('testConnect')}</button></div>
           </div></details>
       </div>
-      <div class="card" style="margin-bottom:14px"><h2>Appearance</h2>
-        <div class="themes" role="radiogroup" aria-label="Theme">${['system','light','dark'].map(t=>`<button class="${theme===t?'on':''}" data-theme="${t}" role="radio" aria-checked="${theme===t}">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}</div>
-      </div>
-      <div class="card"><h2>Exchange rates to LYD</h2>
-        <div class="f"><div class="row3">${['LYD','USD','EUR'].map(c=>`<div class="fld"><span class="lbl">${c}</span><input type="number" step="0.0001" min="0" inputmode="decimal" id="fx-${c}" value="${fx[c]??''}" ${c==='LYD'?'disabled':''}><small class="err"></small></div>`).join('')}</div>
-        <div class="hint">Suggested when you add a foreign-currency entry. Each entry keeps the rate you confirmed, so history never shifts.</div>
-        <div class="actions"><span></span><button class="btn primary" id="save-fx">Save rates</button></div></div>
+      <div class="card"><h2>${t('fxTitle')}</h2>
+        <div class="f"><div class="row3">${['LYD','USD','EUR'].map(c=>`<div class="fld"><span class="lbl">${esc(t('cur')[c])}</span><input type="number" step="0.0001" min="0" inputmode="decimal" id="fx-${c}" value="${fx[c]??''}" ${c==='LYD'?'disabled':''} dir="ltr"><small class="err"></small></div>`).join('')}</div>
+        <div class="hint">${t('fxHint')}</div>
+        <div class="actions"><span></span><button class="btn primary" id="save-fx">${t('saveRates')}</button></div></div>
       </div>
     </div>
     <div>
-      <details class="card" style="margin-bottom:14px" open><summary>Categories <span class="muted small">${D.settings.categories.length}</span></summary><div class="inner">
-        <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>In/Out</th><th>Department</th><th></th></tr></thead><tbody>
-        ${D.settings.categories.map((c,i)=>`<tr><td>${esc(c.name)}</td><td>${c.direction==='In'?'Received':'Spent'}</td><td>${esc(c.department)}</td><td class="r"><button class="btn icon sm ghost" data-delcat="${i}" aria-label="Remove ${esc(c.name)}">${I.x}</button></td></tr>`).join('')}</tbody></table></div>
-        <div class="f" style="margin-top:14px"><div class="fld"><span class="lbl">New category</span><input id="cat-name" placeholder="e.g. Insurance"><small class="err"></small></div><div class="row"><div class="fld"><span class="lbl">Direction</span><select id="cat-dir"><option value="Out">Spent</option><option value="In">Received</option></select></div><div class="fld"><span class="lbl">Department</span><select id="cat-dept"><option>Production</option><option>Post</option><option>Overhead</option><option>Revenue</option></select></div></div>
-        <div class="actions"><span></span><button class="btn" id="add-cat">${I.plus}Add category</button></div></div>
+      <details class="card" style="margin-bottom:14px" open><summary>${t('categories')} <span class="muted small">${D.settings.categories.length}</span></summary><div class="inner">
+        <div class="tbl-wrap"><table><thead><tr><th>${t('name')}</th><th>${t('inOut')}</th><th>${t('department')}</th><th></th></tr></thead><tbody>
+        ${D.settings.categories.map((c,i)=>`<tr><td>${esc(L('cat',c.name))}</td><td>${c.direction==='In'?t('dirIn'):t('dirOut')}</td><td>${esc(L('dept',c.department))}</td><td class="r"><button class="btn icon sm ghost" data-delcat="${i}" aria-label="${esc(t('removeX',{x:L('cat',c.name)}))}">${I.x}</button></td></tr>`).join('')}</tbody></table></div>
+        <div class="f" style="margin-top:14px"><div class="fld"><span class="lbl">${t('newCategory')}</span><input id="cat-name" placeholder="${t('catPh')}"><small class="err"></small></div><div class="row"><div class="fld"><span class="lbl">${t('direction')}</span><select id="cat-dir"><option value="Out">${t('dirOut')}</option><option value="In">${t('dirIn')}</option></select></div><div class="fld"><span class="lbl">${t('department')}</span><select id="cat-dept">${['Production','Post','Overhead','Revenue'].map(d=>`<option value="${d}">${esc(L('dept',d))}</option>`).join('')}</select></div></div>
+        <div class="actions"><span></span><button class="btn" id="add-cat">${I.plus}${t('addCategory')}</button></div></div>
       </div></details>
-      <details class="card" open><summary>Payees <span class="muted small">${D.settings.payees.length}</span></summary><div class="inner">
-        <div class="chips" style="margin-bottom:14px">${D.settings.payees.map((p,i)=>`<span class="chip">${esc(p)}<button data-delpayee="${i}" aria-label="Remove ${esc(p)}">${I.x}</button></span>`).join('')||'<span class="muted small">None yet — payees you type in entries can be saved here for quick picking.</span>'}</div>
-        <div class="f"><div class="row"><div class="fld"><span class="lbl">New payee</span><input id="payee-name" placeholder="e.g. Tripoli Camera House"><small class="err"></small></div><div class="fld"><span class="lbl">&nbsp;</span><button class="btn" id="add-payee" style="height:44px">${I.plus}Add payee</button></div></div></div>
+      <details class="card" open><summary>${t('payees')} <span class="muted small">${D.settings.payees.length}</span></summary><div class="inner">
+        <div class="chips" style="margin-bottom:14px">${D.settings.payees.map((p,i)=>`<span class="chip">${esc(L('payee',p))}<button data-delpayee="${i}" aria-label="${esc(t('removeX',{x:L('payee',p)}))}">${I.x}</button></span>`).join('')||`<span class="muted small">${t('noPayees')}</span>`}</div>
+        <div class="f"><div class="row"><div class="fld"><span class="lbl">${t('newPayee')}</span><input id="payee-name" placeholder="${t('payeePh')}"><small class="err"></small></div><div class="fld"><span class="lbl">&nbsp;</span><button class="btn" id="add-payee" style="height:44px">${I.plus}${t('addPayee')}</button></div></div></div>
       </div></details>
     </div>
   </div>`;
 }
 function renderAuth(msg){
-  app.innerHTML=`<div class="auth"><form class="card" id="auth-form" novalidate><div class="brand"><img src="logo.png" alt="Fennec Productions"><small>Production finance</small></div>
+  app.innerHTML=`<div class="auth"><form class="card" id="auth-form" novalidate><div class="brand"><img src="logo.png" alt="Fennec Productions"><small>${t('tagline')}</small></div>
     <div class="f">
-      <div class="fld"><span class="lbl">Email</span><input id="au-email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required><small class="err"></small></div>
-      <div class="fld"><span class="lbl">Password</span><input id="au-pass" type="password" autocomplete="current-password" required><small class="err"></small></div>
+      <div class="fld"><span class="lbl">${t('email')}</span><input id="au-email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required dir="ltr"><small class="err"></small></div>
+      <div class="fld"><span class="lbl">${t('password')}</span><input id="au-pass" type="password" autocomplete="current-password" required dir="ltr"><small class="err"></small></div>
       <div class="msg" id="au-err">${esc(msg||'')}</div>
-      <button class="btn primary" type="submit" id="au-go" style="height:44px;justify-content:center">Sign in</button>
-      <div class="hint" style="text-align:center">Accounts are created by the owner. Ask them if you need access.<br><span style="opacity:.6">v${APP_VERSION}</span></div>
+      <button class="btn primary" type="submit" id="au-go" style="height:44px;justify-content:center">${t('signIn')}</button>
+      <div class="hint" style="text-align:center">${t('accountsNote')}<br><span style="opacity:.6">${ltr('v'+APP_VERSION)}</span> · ${langBtn('lang-auth')}</div>
     </div></form></div>`;
   $('#au-email').focus();
+  $('#lang-auth').onclick=e=>{ e.preventDefault(); setLang(isAr()?'en':'ar'); };
   $('#auth-form').onsubmit=async e=>{
     e.preventDefault();
     const email=$('#au-email').value.trim(), pass=$('#au-pass').value; let ok=true;
-    ok=setErr('#au-email', email?'' :'Enter your email')&&ok; ok=setErr('#au-pass', pass?'':'Enter your password')&&ok; if(!ok) return;
+    ok=setErr('#au-email', email?'' :t('errEmail'))&&ok; ok=setErr('#au-pass', pass?'':t('errPass'))&&ok; if(!ok) return;
     const b=$('#au-go'); b.classList.add('busy'); b.disabled=true; $('#au-err').textContent='';
     try{ await DB.signIn(email,pass); renderLoading(); await reload(); }
     catch(err){ $('#au-err').textContent=friendlyError(err); b.classList.remove('busy'); b.disabled=false; $('#au-pass').select(); }
@@ -650,11 +835,11 @@ function renderAuth(msg){
 }
 function renderError(e){
   const m=friendlyError(e);
-  app.innerHTML=`<div class="auth"><div class="card"><h2 style="color:var(--ink);font-size:18px">Couldn't load your books</h2><p class="muted" style="margin:0 0 6px">${esc(m)}</p>
-    <p class="hint" style="margin:0 0 16px">${DB.mode==='supabase'?'If this keeps happening, check that <code>schema.sql</code> has been run in the connected Supabase project.':''}</p>
-    <div class="f"><button class="btn primary" id="e-retry" style="justify-content:center">Try again</button>
-    ${DB.mode==='supabase'?`<button class="btn" id="e-signout" style="justify-content:center">Sign in again</button>`:''}
-    <button class="btn ghost" id="e-offline" style="justify-content:center">Continue offline (nothing is saved)</button></div></div></div>`;
+  app.innerHTML=`<div class="auth"><div class="card"><h2 style="color:var(--ink);font-size:18px">${t('errTitle')}</h2><p class="muted" style="margin:0 0 6px">${esc(m)}</p>
+    <p class="hint" style="margin:0 0 16px">${DB.mode==='supabase'?t('errHint'):''}</p>
+    <div class="f"><button class="btn primary" id="e-retry" style="justify-content:center">${t('retry')}</button>
+    ${DB.mode==='supabase'?`<button class="btn" id="e-signout" style="justify-content:center">${t('signInAgain')}</button>`:''}
+    <button class="btn ghost" id="e-offline" style="justify-content:center">${t('continueOffline')}</button></div></div></div>`;
   $('#e-retry').onclick=()=>{ renderLoading(); reload(); };
   const so=$('#e-signout'); if(so) so.onclick=async()=>{ try{await DB.signOut();}catch(x){} renderAuth(); };
   $('#e-offline').onclick=()=>{ store.set('offline','1'); location.reload(); };
@@ -662,7 +847,7 @@ function renderError(e){
 
 /* ---------- interactions ---------- */
 function bind(s){
-  app.querySelectorAll('[data-tx]').forEach(el=>el.onclick=()=>openTx(D.transactions.find(t=>t.id===el.dataset.tx)));
+  app.querySelectorAll('[data-tx]').forEach(el=>el.onclick=()=>openTx(D.transactions.find(x=>x.id===el.dataset.tx)));
   app.querySelectorAll('[data-proj]').forEach(el=>el.onclick=()=>openProject(D.projects.find(p=>p.id===el.dataset.proj)));
   app.querySelectorAll('[data-inv]').forEach(el=>el.onclick=()=>openInvoice(D.invoices.find(i=>i.id===el.dataset.inv)));
   app.querySelectorAll('a[data-nav],i[data-nav]').forEach(a=>a.onclick=e=>{e.preventDefault();go(a.dataset.nav);});
@@ -670,45 +855,44 @@ function bind(s){
   ['#add-inv','#add-inv2'].forEach(id=>{const b=$(id); if(b) b.onclick=()=>openInvoice();});
   const ht=$('#hs-tx'); if(ht) ht.onclick=()=>openTx();
   const fp=$('#f-proj'); if(fp){
-    const refresh=()=>{ const list=txFiltered(); $('#tx-list').innerHTML=txListHtml(list); const total=r2(list.reduce((a,t)=>a+(t.direction==='In'?1:-1)*amountLYD(t),0)); $('#tx-count').textContent=`${list.length} entries · ${total>=0?'+':''}${fmt(total)} LYD`; app.querySelectorAll('#tx-list [data-tx]').forEach(el=>el.onclick=()=>openTx(D.transactions.find(t=>t.id===el.dataset.tx))); const h=$('#hs-tx'); if(h) h.onclick=()=>openTx(); };
+    const refresh=()=>{ const list=txFiltered(); $('#tx-list').innerHTML=txListHtml(list); $('#tx-count').textContent=txCountText(list); app.querySelectorAll('#tx-list [data-tx]').forEach(el=>el.onclick=()=>openTx(D.transactions.find(x=>x.id===el.dataset.tx))); const h=$('#hs-tx'); if(h) h.onclick=()=>openTx(); };
     fp.onchange=()=>{txFilter.project=fp.value;refresh();}; $('#f-dir').onchange=e=>{txFilter.dir=e.target.value;refresh();};
-    const fq=$('#f-q'); let t; fq.oninput=()=>{clearTimeout(t);t=setTimeout(()=>{txFilter.q=fq.value;refresh();},150)}; }
+    const fq=$('#f-q'); let tm; fq.oninput=()=>{clearTimeout(tm);tm=setTimeout(()=>{txFilter.q=fq.value;refresh();},150)}; }
   if(page==='settings'){
+    app.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
     const c=$('#connect'); if(c) c.onclick=async()=>{ const u=$('#sb-url').value.trim().replace(/\/+$/,''), k=$('#sb-key').value.trim(); let ok=true;
-      ok=setErr('#sb-url', /^https:\/\/[a-z0-9-]+\.supabase\.(co|in)$/.test(u)?'':'Looks like https://xxxx.supabase.co')&&ok; ok=setErr('#sb-key', k.length>20?'':'Paste the anon public key')&&ok; if(!ok) return;
-      if(!window.supabase) return toast('Database library did not load',true);
+      ok=setErr('#sb-url', /^https:\/\/[a-z0-9-]+\.supabase\.(co|in)$/.test(u)?'':t('errUrl'))&&ok; ok=setErr('#sb-key', k.length>20?'':t('errKey'))&&ok; if(!ok) return;
+      if(!window.supabase) return toast(t('libNotLoaded'),true);
       c.classList.add('busy'); c.disabled=true; const err=await testConnection(u,k); c.classList.remove('busy'); c.disabled=false;
       if(err) return setErr('#sb-key',err); store.set('sb_url',u); store.set('sb_key',k); store.del('offline'); location.reload(); };
-    const rd=$('#reset-db'); if(rd) rd.onclick=async()=>{ if(await confirmDialog({title:'Use the default database?',body:'This browser will switch back to the built-in Fennec project. No data is deleted.',ok:'Switch'})){ store.del('sb_url'); store.del('sb_key'); location.reload(); } };
+    const rd=$('#reset-db'); if(rd) rd.onclick=async()=>{ if(await confirmDialog({title:t('useDefaultTitle'),body:t('useDefaultBody'),ok:t('switch')})){ store.del('sb_url'); store.del('sb_key'); location.reload(); } };
     const so=$('#signout'); if(so) so.onclick=async()=>{ try{ await DB.signOut(); }catch(e){} renderAuth(); };
     const rc=$('#reconnect'); if(rc) rc.onclick=()=>{ store.del('offline'); location.reload(); };
-    app.querySelectorAll('[data-theme]').forEach(b=>b.onclick=()=>{ const t=b.dataset.theme; if(t==='system') store.del('theme'); else store.set('theme',t); applyTheme(); render(); });
-    $('#save-fx').onclick=async()=>{ let ok=true; const v={}; for(const c of ['USD','EUR']){ const n=Number($('#fx-'+c).value); v[c]=n; ok=setErr('#fx-'+c, n>0?'':'Enter a rate above 0')&&ok; } if(!ok) return;
-      await save(()=>DB.saveSetting('fx_rates',{LYD:1,USD:v.USD,EUR:v.EUR}),'Rates saved'); };
-    $('#add-cat').onclick=async()=>{ const n=$('#cat-name').value.trim(); if(!setErr('#cat-name', n?'':'Give the category a name')) return;
-      if(D.settings.categories.some(c=>c.name.toLowerCase()===n.toLowerCase())) return setErr('#cat-name','That category already exists');
-      const cats=[...D.settings.categories,{name:n,direction:$('#cat-dir').value,department:$('#cat-dept').value}]; await save(()=>DB.saveSetting('categories',cats),'Category added'); };
+    app.querySelectorAll('[data-theme]').forEach(b=>b.onclick=()=>{ const x=b.dataset.theme; if(x==='system') store.del('theme'); else store.set('theme',x); applyTheme(); render(); });
+    $('#save-fx').onclick=async()=>{ let ok=true; const v={}; for(const c of ['USD','EUR']){ const n=Number($('#fx-'+c).value); v[c]=n; ok=setErr('#fx-'+c, n>0?'':t('errRate'))&&ok; } if(!ok) return;
+      await save(()=>DB.saveSetting('fx_rates',{LYD:1,USD:v.USD,EUR:v.EUR}),t('ratesSaved')); };
+    $('#add-cat').onclick=async()=>{ const n=$('#cat-name').value.trim(); if(!setErr('#cat-name', n?'':t('errCatName'))) return;
+      if(D.settings.categories.some(c=>c.name.toLowerCase()===n.toLowerCase()||L('cat',c.name)===n)) return setErr('#cat-name',t('catExists'));
+      const cats=[...D.settings.categories,{name:n,direction:$('#cat-dir').value,department:$('#cat-dept').value}]; await save(()=>DB.saveSetting('categories',cats),t('catAdded')); };
     $('#cat-name').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); $('#add-cat').click(); } };
-    app.querySelectorAll('[data-delcat]').forEach(b=>b.onclick=async()=>{ const i=Number(b.dataset.delcat), cat=D.settings.categories[i]; const used=D.transactions.filter(t=>t.category===cat.name).length;
-      if(!await confirmDialog({title:`Remove "${cat.name}"?`,body:used?`${used} ${used===1?'entry uses':'entries use'} it. They keep the name, but it won't be offered for new entries.`:'It can be added again later.',ok:'Remove',danger:true})) return;
-      const cats=D.settings.categories.filter((_,j)=>j!==i); await save(()=>DB.saveSetting('categories',cats),'Category removed'); });
-    $('#add-payee').onclick=async()=>{ const n=$('#payee-name').value.trim(); if(!setErr('#payee-name', n?'':'Enter a name')) return;
-      if(D.settings.payees.some(p=>p.toLowerCase()===n.toLowerCase())) return setErr('#payee-name','Already in the list');
-      await save(()=>DB.saveSetting('payees',[...D.settings.payees,n]),'Payee added'); };
+    app.querySelectorAll('[data-delcat]').forEach(b=>b.onclick=async()=>{ const i=Number(b.dataset.delcat), cat=D.settings.categories[i]; const used=D.transactions.filter(x=>x.category===cat.name).length;
+      if(!await confirmDialog({title:t('removeCat',{x:L('cat',cat.name)}),body:used?t('catUsed',{n:used}):t('canReadd'),ok:t('remove'),danger:true})) return;
+      const cats=D.settings.categories.filter((_,j)=>j!==i); await save(()=>DB.saveSetting('categories',cats),t('catRemoved')); });
+    $('#add-payee').onclick=async()=>{ const n=$('#payee-name').value.trim(); if(!setErr('#payee-name', n?'':t('errPayee'))) return;
+      if(D.settings.payees.some(p=>p.toLowerCase()===n.toLowerCase()||L('payee',p)===n)) return setErr('#payee-name',t('payeeExists'));
+      await save(()=>DB.saveSetting('payees',[...D.settings.payees,n]),t('payeeAdded')); };
     $('#payee-name').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); $('#add-payee').click(); } };
-    app.querySelectorAll('[data-delpayee]').forEach(b=>b.onclick=async()=>{ const i=Number(b.dataset.delpayee); const ps=D.settings.payees.filter((_,j)=>j!==i); await save(()=>DB.saveSetting('payees',ps),'Payee removed'); });
+    app.querySelectorAll('[data-delpayee]').forEach(b=>b.onclick=async()=>{ const i=Number(b.dataset.delpayee); const ps=D.settings.payees.filter((_,j)=>j!==i); await save(()=>DB.saveSetting('payees',ps),t('payeeRemoved')); });
   }
 }
-async function save(fn,msg){ try{ await fn(); await reload(); if(msg) toast(msg); return true; }catch(e){ toast('Could not save: '+friendlyError(e),true); return false; } }
-/* field validation: returns true when ok */
+async function save(fn,msg){ try{ await fn(); await reload(); if(msg) toast(msg); return true; }catch(e){ toast(t('couldNotSave',{m:friendlyError(e)}),true); return false; } }
 function setErr(sel,msg){ const el=$(sel); if(!el) return !msg; const f=el.closest('.fld'); if(!f) return !msg; f.classList.toggle('bad',!!msg); const e=f.querySelector('.err'); if(e) e.textContent=msg||''; if(msg) el.focus(); return !msg; }
-function clearErr(sel){ const el=$(sel); const f=el&&el.closest('.fld'); if(f) f.classList.remove('bad'); }
 
 /* sheet */
 let lastFocus=null;
 function openSheet(title,body,foot){
   lastFocus=document.activeElement;
-  $('#sheet').innerHTML=`<div class="head"><h2 id="sheet-title">${title}</h2><button class="btn icon ghost" id="sheet-x" aria-label="Close">${I.x}</button></div><div class="body">${body}</div><div class="foot">${foot}</div>`;
+  $('#sheet').innerHTML=`<div class="head"><h2 id="sheet-title">${title}</h2><button class="btn icon ghost" id="sheet-x" aria-label="${t('close')}">${I.x}</button></div><div class="body">${body}</div><div class="foot">${foot}</div>`;
   $('#sheet').classList.add('open'); $('#scrim').classList.add('open'); document.body.classList.add('locked');
   $('#sheet-x').onclick=closeSheet;
   $('#sheet .body').querySelectorAll('.fld input,.fld select,.fld textarea').forEach(el=>el.addEventListener('input',()=>{const f=el.closest('.fld'); if(f) f.classList.remove('bad');}));
@@ -718,11 +902,10 @@ function openSheet(title,body,foot){
 function closeSheet(){ $('#sheet').classList.remove('open'); $('#scrim').classList.remove('open'); document.body.classList.remove('locked'); if(lastFocus&&lastFocus.focus&&document.contains(lastFocus)) lastFocus.focus(); }
 $('#scrim').onclick=closeSheet;
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if($('#confirm').classList.contains('open')) resolveConfirm(false); else closeSheet(); } });
-/* in-app confirm */
 let _resolveC=null;
-function confirmDialog({title,body,ok='OK',danger=false}){
+function confirmDialog({title,body,ok,danger=false}){
   return new Promise(res=>{ _resolveC=res;
-    $('#confirm').innerHTML=`<h3 id="confirm-title">${esc(title)}</h3><p>${esc(body||'')}</p><div class="actions"><button class="btn" id="c-no">Cancel</button><button class="btn ${danger?'danger':'primary'}" id="c-yes">${esc(ok)}</button></div>`;
+    $('#confirm').innerHTML=`<h3 id="confirm-title">${esc(title)}</h3><p>${esc(body||'')}</p><div class="actions"><button class="btn" id="c-no">${t('cancel')}</button><button class="btn ${danger?'danger':'primary'}" id="c-yes">${esc(ok||'OK')}</button></div>`;
     $('#confirm').classList.add('open'); $('#cscrim').classList.add('open');
     $('#c-no').onclick=()=>resolveConfirm(false); $('#c-yes').onclick=()=>resolveConfirm(true); $('#c-yes').focus(); });
 }
@@ -732,78 +915,78 @@ const fld=(label,input,{hint,id}={})=>`<div class="fld"${id?` id="${id}"`:''}><s
 const opts=(arr,sel,val=x=>x,lab=x=>x)=>arr.map(x=>`<option value="${esc(val(x))}" ${val(x)===sel?'selected':''}>${esc(lab(x))}</option>`).join('');
 
 /* ---------- entry (transaction) ---------- */
-function openTx(t){
-  const edit=!!(t&&t.id);
-  t=Object.assign({date:today(),direction:'Out',currency:'LYD',fx_rate:1,method:'Cash',project_id:D.projects.find(p=>p.status==='Active')?.id||D.projects[0]?.id||''},t||{});
+function openTx(x){
+  const edit=!!(x&&x.id);
+  x=Object.assign({date:today(),direction:'Out',currency:'LYD',fx_rate:1,method:'Cash',project_id:D.projects.find(p=>p.status==='Active')?.id||D.projects[0]?.id||''},x||{});
   const fx=D.settings.fx_rates;
-  const cats=dir=>{const list=D.settings.categories.filter(c=>c.direction===dir); return opts(list, t.category, c=>c.name, c=>c.name);};
-  const invs=D.invoices.filter(i=>i.status!=='Cancelled'&&(i.status!=='Paid'||i.id===t.invoice_id));
-  openSheet(edit?'Edit entry':'New entry',`<div class="f">
-    <div class="seg" id="seg" role="radiogroup" aria-label="Direction"><button type="button" class="${t.direction==='Out'?'on':''} Out" data-d="Out" role="radio" aria-checked="${t.direction==='Out'}">${I.up}We paid</button><button type="button" class="${t.direction==='In'?'on':''} In" data-d="In" role="radio" aria-checked="${t.direction==='In'}">${I.down}We received</button></div>
-    <div class="amount">${fld('Amount','<input id="t-amt" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0" value="'+(t.amount??'')+'">')}${fld('Currency','<select id="t-cur">'+opts(Object.keys(fx),t.currency)+'</select>')}</div>
-    <div class="fxline" id="t-fxline" ${t.currency==='LYD'?'hidden':''}>Rate to LYD <input id="t-fx" type="number" step="0.0001" min="0" inputmode="decimal" value="${t.fx_rate??1}" aria-label="Exchange rate to LYD"> → <b class="num" id="t-lyd">0</b> LYD</div>
-    <div class="row">${fld('Date','<input id="t-date" type="date" value="'+esc(t.date)+'">')}${fld('Paid by','<select id="t-method">'+opts(METHODS,t.method)+'</select>')}</div>
-    ${fld('Production','<select id="t-proj">'+opts(D.projects,t.project_id,p=>p.id,p=>p.name)+'<option value="" '+(!t.project_id?'selected':'')+'>No production (overhead)</option></select>')}
-    ${fld('Category','<select id="t-cat">'+cats(t.direction)+'</select>')}
-    ${fld('Who','<input id="t-payee" list="payees" value="'+esc(t.payee||'')+'" placeholder="Person or company" autocomplete="off"><datalist id="payees">'+D.settings.payees.map(p=>`<option value="${esc(p)}">`).join('')+'</datalist>',{hint:'optional'})}
-    ${fld('For what','<input id="t-desc" value="'+esc(t.description||'')+'" placeholder="e.g. Fuel for the desert shoot">',{hint:'optional'})}
-    <div class="row">${fld('Receipt ref','<input id="t-rec" value="'+esc(t.receipt||'')+'" placeholder="optional">')}
-      ${fld('Settles invoice','<select id="t-inv"><option value="">—</option>'+opts(invs,t.invoice_id,i=>i.id,i=>`${i.number} · ${fmt(i.amount)} LYD`)+'</select>')}</div>
+  const cats=dir=>{const list=D.settings.categories.filter(c=>c.direction===dir); return opts(list, x.category, c=>c.name, c=>L('cat',c.name));};
+  const invs=D.invoices.filter(i=>i.status!=='Cancelled'&&(i.status!=='Paid'||i.id===x.invoice_id));
+  openSheet(edit?t('editEntry'):t('newEntry'),`<div class="f">
+    <div class="seg" id="seg" role="radiogroup" aria-label="${t('direction_sel')}"><button type="button" class="${x.direction==='Out'?'on':''} Out" data-d="Out" role="radio" aria-checked="${x.direction==='Out'}">${I.up}${t('wePaid')}</button><button type="button" class="${x.direction==='In'?'on':''} In" data-d="In" role="radio" aria-checked="${x.direction==='In'}">${I.down}${t('weReceived')}</button></div>
+    <div class="amount">${fld(t('amount'),'<input id="t-amt" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0" dir="ltr" value="'+(x.amount??'')+'">')}${fld(t('currency'),'<select id="t-cur">'+opts(Object.keys(fx),x.currency,c=>c,c=>t('cur')[c]||c)+'</select>')}</div>
+    <div class="fxline" id="t-fxline" ${x.currency==='LYD'?'hidden':''}>${t('rateTo')} <input id="t-fx" type="number" step="0.0001" min="0" inputmode="decimal" dir="ltr" value="${x.fx_rate??1}" aria-label="${t('rateTo')}"> ${t('fxEq')} <b class="num" id="t-lyd">0</b> ${t('lyd')}</div>
+    <div class="row">${fld(t('date'),'<input id="t-date" type="date" value="'+esc(x.date)+'">')}${fld(t('paidBy'),'<select id="t-method">'+opts(METHODS,x.method,m=>m,m=>L('method',m))+'</select>')}</div>
+    ${fld(t('production'),'<select id="t-proj">'+opts(D.projects,x.project_id,p=>p.id,p=>p.name)+'<option value="" '+(!x.project_id?'selected':'')+'>'+t('noProductionOverhead')+'</option></select>')}
+    ${fld(t('category'),'<select id="t-cat">'+cats(x.direction)+'</select>')}
+    ${fld(t('who'),'<input id="t-payee" list="payees" value="'+esc(x.payee||'')+'" placeholder="'+esc(t('whoPh'))+'" autocomplete="off"><datalist id="payees">'+D.settings.payees.map(p=>`<option value="${esc(p)}">${esc(L('payee',p))}</option>`).join('')+'</datalist>',{hint:t('optional')})}
+    ${fld(t('forWhat'),'<input id="t-desc" value="'+esc(x.description||'')+'" placeholder="'+esc(t('forWhatPh'))+'">',{hint:t('optional')})}
+    <div class="row">${fld(t('receipt'),'<input id="t-rec" value="'+esc(x.receipt||'')+'" placeholder="'+esc(t('optional'))+'">')}
+      ${fld(t('settles'),'<select id="t-inv"><option value="">—</option>'+opts(invs,x.invoice_id,i=>i.id,i=>`${i.number} · ${fmt(i.amount)} ${t('lyd')}`)+'</select>')}</div>
   </div>`,
-  `${edit?'<button class="btn danger" id="t-del">Delete</button>':'<span></span>'}<span class="right"><button class="btn" id="t-cancel">Cancel</button><button class="btn primary" id="t-save">${edit?'Save changes':'Add entry'}</button></span>`);
-  let dir=t.direction;
+  `${edit?`<button class="btn danger" id="t-del">${t('delete')}</button>`:'<span></span>'}<span class="right"><button class="btn" id="t-cancel">${t('cancel')}</button><button class="btn primary" id="t-save">${edit?t('saveChanges'):t('addEntry')}</button></span>`);
+  let dir=x.direction;
   const lyd=()=>{ const a=Number($('#t-amt').value)||0, r=Number($('#t-fx').value)||0; $('#t-lyd').textContent=fmt(a*r); };
-  $('#seg').querySelectorAll('button').forEach(b=>b.onclick=()=>{dir=b.dataset.d;$('#seg').querySelectorAll('button').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-checked',x===b);});$('#t-cat').innerHTML=cats(dir);});
+  $('#seg').querySelectorAll('button').forEach(b=>b.onclick=()=>{dir=b.dataset.d;$('#seg').querySelectorAll('button').forEach(y=>{y.classList.toggle('on',y===b);y.setAttribute('aria-checked',y===b);});$('#t-cat').innerHTML=cats(dir);});
   $('#t-cur').onchange=e=>{ const c=e.target.value; $('#t-fx').value=fx[c]??1; $('#t-fxline').hidden=(c==='LYD'); lyd(); };
   $('#t-amt').oninput=lyd; $('#t-fx').oninput=lyd; lyd();
   $('#t-inv').onchange=e=>{ const inv=D.invoices.find(i=>i.id===e.target.value); if(inv){ if(dir!=='In') $('#seg [data-d="In"]').click(); if(!$('#t-payee').value&&inv.client) $('#t-payee').value=inv.client; if(inv.project_id) $('#t-proj').value=inv.project_id; } };
   $('#t-cancel').onclick=closeSheet;
   $('#t-save').onclick=async()=>{
     const amt=Number($('#t-amt').value), rate=$('#t-cur').value==='LYD'?1:Number($('#t-fx').value); let ok=true;
-    ok=setErr('#t-amt', amt>0?'':'Enter an amount above 0')&&ok;
-    ok=setErr('#t-date', $('#t-date').value?'':'Pick a date')&&ok;
-    ok=setErr('#t-cat', $('#t-cat').value?'':'Add a category in Settings first')&&ok;
-    if(!(rate>0)){ toast('Enter an exchange rate above 0',true); $('#t-fx').focus(); return; }
+    ok=setErr('#t-amt', amt>0?'':t('errAmount'))&&ok;
+    ok=setErr('#t-date', $('#t-date').value?'':t('errDate'))&&ok;
+    ok=setErr('#t-cat', $('#t-cat').value?'':t('errCat'))&&ok;
+    if(!(rate>0)){ toast(t('errRateT'),true); $('#t-fx').focus(); return; }
     if(!ok) return;
-    const row={id:t.id,date:$('#t-date').value,direction:dir,amount:amt,currency:$('#t-cur').value,fx_rate:rate,method:$('#t-method').value,
+    const row={id:x.id,date:$('#t-date').value,direction:dir,amount:amt,currency:$('#t-cur').value,fx_rate:rate,method:$('#t-method').value,
       project_id:$('#t-proj').value||null,category:$('#t-cat').value,payee:$('#t-payee').value.trim()||null,description:$('#t-desc').value.trim()||null,receipt:$('#t-rec').value.trim()||null,invoice_id:$('#t-inv').value||null};
     const b=$('#t-save'); b.classList.add('busy'); b.disabled=true;
     const saved=await save(()=>DB.upsert('transactions',row),null);
     if(!saved){ b.classList.remove('busy'); b.disabled=false; return; }
-    closeSheet(); toast(edit?'Saved':'Entry added');
+    closeSheet(); toast(edit?t('saved'):t('entryAdded'));
     if(row.invoice_id && row.direction==='In') await settleInvoiceIfPaid(row.invoice_id);
   };
-  if(edit) $('#t-del').onclick=async()=>{ if(await confirmDialog({title:'Delete this entry?',body:'This cannot be undone.',ok:'Delete',danger:true})){ closeSheet(); await save(()=>DB.remove('transactions',t.id),'Deleted'); } };
+  if(edit) $('#t-del').onclick=async()=>{ if(await confirmDialog({title:t('deleteEntry'),body:t('cannotUndo'),ok:t('delete'),danger:true})){ closeSheet(); await save(()=>DB.remove('transactions',x.id),t('deleted')); } };
 }
 async function settleInvoiceIfPaid(id){
   const inv=D.invoices.find(i=>i.id===id); if(!inv||inv.status==='Paid'||inv.status==='Cancelled') return;
-  const paid=D.transactions.filter(t=>t.direction==='In'&&t.invoice_id===id).reduce((a,t)=>a+amountLYD(t),0);
-  if(paid+0.005>=Number(inv.amount)){ const r={...inv,status:'Paid'}; await save(()=>DB.upsert('invoices',r),`${inv.number} marked paid`); }
+  const paid=D.transactions.filter(x=>x.direction==='In'&&x.invoice_id===id).reduce((a,x)=>a+amountLYD(x),0);
+  if(paid+0.005>=Number(inv.amount)){ const r={...inv,status:'Paid'}; await save(()=>DB.upsert('invoices',r),t('markedPaid',{n:inv.number})); }
 }
 
 /* ---------- production (project) ---------- */
 function openProject(p){
   const edit=!!p; p=p||{status:'Active',budget:''};
-  const s=edit?stats().projects.find(x=>x.id===p.id):null;
-  openSheet(edit?'Edit production':'New production',`<div class="f">
-    ${s?`<div class="invsum"><div><div class="l">Spent</div><div class="v num">${fmt(s.spent)}</div></div><div><div class="l">Received</div><div class="v num">${fmt(s.collected)}</div></div><div><div class="l">${s.net>=0?'Profit so far':'Loss so far'}</div><div class="v num" style="${s.net<0?'color:var(--out)':''}">${fmt(Math.abs(s.net))}</div></div></div>`:''}
-    ${fld('Production name','<input id="p-name" value="'+esc(p.name||'')+'" placeholder="e.g. Desert Roads — brand film">')}
-    ${fld('Client','<input id="p-client" value="'+esc(p.client||'')+'" placeholder="Who is it for?">',{hint:'optional'})}
-    <div class="row">${fld('Status','<select id="p-status">'+opts(STATUS,p.status)+'</select>')}${fld('Budget','<input id="p-budget" type="number" inputmode="decimal" min="0" step="0.01" value="'+esc(p.budget)+'" placeholder="0">',{hint:'LYD'})}</div>
-    ${fld('Notes','<textarea id="p-notes" rows="2" placeholder="Delivery dates, contract terms…">'+esc(p.notes||'')+'</textarea>',{hint:'optional'})}
+  const s=edit?stats().projects.find(y=>y.id===p.id):null;
+  openSheet(edit?t('editProduction'):t('newProduction'),`<div class="f">
+    ${s?`<div class="invsum"><div><div class="l">${t('spentL')}</div><div class="v num">${fmt(s.spent)}</div></div><div><div class="l">${t('receivedL')}</div><div class="v num">${fmt(s.collected)}</div></div><div><div class="l">${s.net>=0?t('profitSoFar'):t('lossSoFarL')}</div><div class="v num" style="${s.net<0?'color:var(--out)':''}">${fmt(Math.abs(s.net))}</div></div></div>`:''}
+    ${fld(t('prodName'),'<input id="p-name" value="'+esc(p.name||'')+'" placeholder="'+esc(t('prodNamePh'))+'">')}
+    ${fld(t('client'),'<input id="p-client" value="'+esc(p.client||'')+'" placeholder="'+esc(t('clientPh'))+'">',{hint:t('optional')})}
+    <div class="row">${fld(t('status'),'<select id="p-status">'+opts(STATUS,p.status,y=>y,y=>L('status',y))+'</select>')}${fld(t('budget'),'<input id="p-budget" type="number" inputmode="decimal" min="0" step="0.01" dir="ltr" value="'+esc(p.budget)+'" placeholder="0">',{hint:t('lyd')})}</div>
+    ${fld(t('notes'),'<textarea id="p-notes" rows="2" placeholder="'+esc(t('notesPh'))+'">'+esc(p.notes||'')+'</textarea>',{hint:t('optional')})}
   </div>`,
-  `${edit?`<span class="right"><button class="btn danger" id="p-del">Delete</button><button class="btn ghost" id="p-ledger">View ledger</button></span>`:'<span></span>'}<span class="right"><button class="btn" id="p-cancel">Cancel</button><button class="btn primary" id="p-save">${edit?'Save changes':'Create production'}</button></span>`);
+  `${edit?`<span class="right"><button class="btn danger" id="p-del">${t('delete')}</button><button class="btn ghost" id="p-ledger">${t('viewLedger')}</button></span>`:'<span></span>'}<span class="right"><button class="btn" id="p-cancel">${t('cancel')}</button><button class="btn primary" id="p-save">${edit?t('saveChanges'):t('createProduction')}</button></span>`);
   $('#p-cancel').onclick=closeSheet;
-  $('#p-save').onclick=async()=>{ const name=$('#p-name').value.trim(); if(!setErr('#p-name', name?'':'Give the production a name')) return;
-    const budget=$('#p-budget').value===''?0:Number($('#p-budget').value); if(!setErr('#p-budget', budget>=0&&!isNaN(budget)?'':'Enter a valid budget')) return;
+  $('#p-save').onclick=async()=>{ const name=$('#p-name').value.trim(); if(!setErr('#p-name', name?'':t('errProdName'))) return;
+    const budget=$('#p-budget').value===''?0:Number($('#p-budget').value); if(!setErr('#p-budget', budget>=0&&!isNaN(budget)?'':t('errBudget'))) return;
     const row={id:p.id,name,client:$('#p-client').value.trim()||null,status:$('#p-status').value,budget,notes:$('#p-notes').value.trim()||null};
     const b=$('#p-save'); b.classList.add('busy'); b.disabled=true;
     const ok=await save(()=>DB.upsert('projects',row),null); if(!ok){ b.classList.remove('busy'); b.disabled=false; return; }
-    closeSheet(); toast(edit?'Saved':'Production created'); };
+    closeSheet(); toast(edit?t('saved'):t('productionCreated')); };
   if(edit){
     $('#p-ledger').onclick=()=>{ closeSheet(); txFilter={project:p.id,dir:'',q:''}; go('tx'); };
-    $('#p-del').onclick=async()=>{ const n=D.transactions.filter(t=>t.project_id===p.id).length;
-      if(await confirmDialog({title:`Delete "${p.name}"?`,body:n?`Its ${n} ${n===1?'entry stays':'entries stay'} in the ledger as overhead (no production).`:'This cannot be undone.',ok:'Delete',danger:true})){ closeSheet(); await save(()=>DB.remove('projects',p.id),'Deleted'); } };
+    $('#p-del').onclick=async()=>{ const n=D.transactions.filter(x=>x.project_id===p.id).length;
+      if(await confirmDialog({title:t('deleteX',{x:p.name}),body:n?t('prodEntriesStay',{n}):t('cannotUndo'),ok:t('delete'),danger:true})){ closeSheet(); await save(()=>DB.remove('projects',p.id),t('deleted')); } };
   }
 }
 
@@ -811,33 +994,33 @@ function openProject(p){
 function openInvoice(i){
   const edit=!!i;
   i=i||{number:nextInvoiceNumber(),issued:today(),due:'',status:'Draft',amount:'',project_id:D.projects.find(p=>p.status==='Active')?.id||D.projects[0]?.id||''};
-  const s=edit?stats().inv.find(x=>x.id===i.id):null;
-  openSheet(edit?'Edit invoice':'New invoice',`<div class="f">
-    ${s?`<div class="invsum"><div><div class="l">Amount</div><div class="v num">${fmt(s.amount)}</div></div><div><div class="l">Paid</div><div class="v num" style="color:var(--in)">${fmt(s.paid)}</div></div><div><div class="l">Unpaid</div><div class="v num" style="${s.balance>0&&s.status!=='Cancelled'?'color:var(--out)':''}">${fmt(s.balance)}</div></div></div>`:''}
-    <div class="row">${fld('Invoice number','<input id="i-num" value="'+esc(i.number)+'" autocomplete="off">')}${fld('Status','<select id="i-status">'+opts(INV_STATUS,i.status)+'</select>')}</div>
-    ${fld('Production','<select id="i-proj">'+opts(D.projects,i.project_id,p=>p.id,p=>p.name)+'<option value="" '+(!i.project_id?'selected':'')+'>No production</option></select>')}
-    ${fld('Client','<input id="i-client" value="'+esc(i.client||'')+'" placeholder="Who is being billed?">')}
-    ${fld('Amount','<input id="i-amt" type="number" inputmode="decimal" min="0" step="0.01" value="'+esc(i.amount)+'" placeholder="0">',{hint:'LYD'})}
-    <div class="row">${fld('Issued','<input id="i-issued" type="date" value="'+esc(i.issued||'')+'">')}${fld('Due','<input id="i-due" type="date" value="'+esc(i.due||'')+'">',{hint:'optional'})}</div>
+  const s=edit?stats().inv.find(y=>y.id===i.id):null;
+  openSheet(edit?t('editInvoice'):t('newInvoice'),`<div class="f">
+    ${s?`<div class="invsum"><div><div class="l">${t('amount')}</div><div class="v num">${fmt(s.amount)}</div></div><div><div class="l">${t('paidL')}</div><div class="v num" style="color:var(--in)">${fmt(s.paid)}</div></div><div><div class="l">${t('unpaidL')}</div><div class="v num" style="${s.balance>0&&s.status!=='Cancelled'?'color:var(--out)':''}">${fmt(s.balance)}</div></div></div>`:''}
+    <div class="row">${fld(t('invNumber'),'<input id="i-num" value="'+esc(i.number)+'" autocomplete="off" dir="ltr">')}${fld(t('status'),'<select id="i-status">'+opts(INV_STATUS,i.status,y=>y,y=>L('status',y))+'</select>')}</div>
+    ${fld(t('production'),'<select id="i-proj">'+opts(D.projects,i.project_id,p=>p.id,p=>p.name)+'<option value="" '+(!i.project_id?'selected':'')+'>'+t('noProductionS')+'</option></select>')}
+    ${fld(t('client'),'<input id="i-client" value="'+esc(i.client||'')+'" placeholder="'+esc(t('clientBilled'))+'">')}
+    ${fld(t('amount'),'<input id="i-amt" type="number" inputmode="decimal" min="0" step="0.01" dir="ltr" value="'+esc(i.amount)+'" placeholder="0">',{hint:t('lyd')})}
+    <div class="row">${fld(t('issued'),'<input id="i-issued" type="date" value="'+esc(i.issued||'')+'">')}${fld(t('dueL'),'<input id="i-due" type="date" value="'+esc(i.due||'')+'">',{hint:t('optional')})}</div>
   </div>`,
-  `${edit?`<span class="right"><button class="btn danger" id="i-del">Delete</button>${s&&s.balance>0&&s.status!=='Cancelled'?`<button class="btn primary" id="i-pay">Record payment</button>`:''}</span>`:'<span></span>'}<span class="right"><button class="btn" id="i-cancel">Cancel</button><button class="btn primary" id="i-save">${edit?'Save changes':'Create invoice'}</button></span>`);
-  $('#i-proj').onchange=e=>{ const p=D.projects.find(x=>x.id===e.target.value); if(p&&!$('#i-client').value) $('#i-client').value=p.client||''; };
-  if(!edit){ const p=D.projects.find(x=>x.id===i.project_id); if(p&&p.client) $('#i-client').value=p.client; }
+  `${edit?`<span class="right"><button class="btn danger" id="i-del">${t('delete')}</button>${s&&s.balance>0&&s.status!=='Cancelled'?`<button class="btn primary" id="i-pay">${t('recordPayment')}</button>`:''}</span>`:'<span></span>'}<span class="right"><button class="btn" id="i-cancel">${t('cancel')}</button><button class="btn primary" id="i-save">${edit?t('saveChanges'):t('createInvoice')}</button></span>`);
+  $('#i-proj').onchange=e=>{ const p=D.projects.find(y=>y.id===e.target.value); if(p&&!$('#i-client').value) $('#i-client').value=p.client||''; };
+  if(!edit){ const p=D.projects.find(y=>y.id===i.project_id); if(p&&p.client) $('#i-client').value=p.client; }
   $('#i-cancel').onclick=closeSheet;
   $('#i-save').onclick=async()=>{ let ok=true; const num=$('#i-num').value.trim(), amt=Number($('#i-amt').value), issued=$('#i-issued').value, due=$('#i-due').value;
-    ok=setErr('#i-num', !num?'Enter an invoice number':(D.invoices.some(x=>x.number.toLowerCase()===num.toLowerCase()&&x.id!==i.id)?'That number is already used':''))&&ok;
-    ok=setErr('#i-amt', amt>0?'':'Enter an amount above 0')&&ok;
-    ok=setErr('#i-issued', issued?'':'Pick the issue date')&&ok;
-    ok=setErr('#i-due', due&&issued&&due<issued?'Due date is before the issue date':'')&&ok;
+    ok=setErr('#i-num', !num?t('errInvNum'):(D.invoices.some(y=>y.number.toLowerCase()===num.toLowerCase()&&y.id!==i.id)?t('invNumUsed'):''))&&ok;
+    ok=setErr('#i-amt', amt>0?'':t('errAmount'))&&ok;
+    ok=setErr('#i-issued', issued?'':t('errIssued'))&&ok;
+    ok=setErr('#i-due', due&&issued&&due<issued?t('errDue'):'')&&ok;
     if(!ok) return;
     const row={id:i.id,number:num,project_id:$('#i-proj').value||null,client:$('#i-client').value.trim()||null,amount:amt,issued,due:due||null,status:$('#i-status').value};
     const b=$('#i-save'); b.classList.add('busy'); b.disabled=true;
     const saved=await save(()=>DB.upsert('invoices',row),null); if(!saved){ b.classList.remove('busy'); b.disabled=false; return; }
-    closeSheet(); toast(edit?'Saved':'Invoice created'); };
+    closeSheet(); toast(edit?t('saved'):t('invoiceCreated')); };
   if(edit){
-    $('#i-del').onclick=async()=>{ const n=D.transactions.filter(t=>t.invoice_id===i.id).length;
-      if(await confirmDialog({title:`Delete ${i.number}?`,body:n?`${n} ${n===1?'payment stays':'payments stay'} in the ledger but no longer point to this invoice.`:'This cannot be undone.',ok:'Delete',danger:true})){ closeSheet(); await save(()=>DB.remove('invoices',i.id),'Deleted'); } };
-    const pay=$('#i-pay'); if(pay) pay.onclick=()=>{ closeSheet(); setTimeout(()=>openTx({direction:'In',category:D.settings.categories.find(c=>c.name==='Client Payment')?'Client Payment':(D.settings.categories.find(c=>c.direction==='In')||{}).name,amount:s.balance,currency:'LYD',fx_rate:1,method:'Bank Transfer',payee:i.client||'',project_id:i.project_id||'',invoice_id:i.id,description:`Payment for ${i.number}`}),120); };
+    $('#i-del').onclick=async()=>{ const n=D.transactions.filter(x=>x.invoice_id===i.id).length;
+      if(await confirmDialog({title:t('deleteInv',{n:i.number}),body:n?t('paymentsStay',{n}):t('cannotUndo'),ok:t('delete'),danger:true})){ closeSheet(); await save(()=>DB.remove('invoices',i.id),t('deleted')); } };
+    const pay=$('#i-pay'); if(pay) pay.onclick=()=>{ closeSheet(); setTimeout(()=>openTx({direction:'In',category:D.settings.categories.find(c=>c.name==='Client Payment')?'Client Payment':(D.settings.categories.find(c=>c.direction==='In')||{}).name,amount:s.balance,currency:'LYD',fx_rate:1,method:'Bank Transfer',payee:i.client||'',project_id:i.project_id||'',invoice_id:i.id,description:t('paymentFor',{n:i.number})}),120); };
   }
 }
 
