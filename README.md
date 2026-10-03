@@ -1,44 +1,51 @@
 # Fennec Finance
 
-A single-file web app for tracking production finances. Works on phone and desktop. Free to run.
+Production finance for Fennec Productions: a ledger of money in and out, productions with budgets, and invoices with payments. One HTML file, works on phone and desktop, free to run.
 
-- `index.html` — the whole app. Opens in demo mode with sample data until you connect a database.
-- `schema.sql` — creates the tables in your Supabase project.
+- `index.html` — the whole app, with the Fennec Supabase project built in.
+- `schema.sql` — creates the tables in a Supabase project.
+- `icon.svg`, `apple-touch-icon.png`, `manifest.webmanifest` — lets the site install as an app on a phone's home screen.
+- `vercel.json` — tells Vercel to serve the folder as a static site.
 
-## Set up (about 15 minutes)
+Live at the Vercel URL; every push to `main` redeploys.
 
-1. **Create a Supabase project** at supabase.com (free tier). Any region; Frankfurt is closest to Libya.
-2. **Run the schema.** Dashboard → SQL Editor → New query → paste `schema.sql` → Run.
-3. **Turn off public sign-ups.** Dashboard → Authentication → Sign In / Providers → switch off *Allow new users to sign up*. **Do not skip this:** the schema gives every signed-in user full access, and with sign-ups on, anyone who finds the page can create an account with the anon key and read your books.
-4. **Add a user.** Dashboard → Authentication → Users → Add user → email + password. Repeat for each team member.
-5. **Get the keys.** Dashboard → Project Settings → API. Copy the *Project URL* and the *anon public* key. (Never the service_role key.)
-6. **Host `index.html`.** Any static host works and all have a free tier:
-   - Netlify: drag the `fennec-finance` folder onto app.netlify.com/drop
-   - Vercel, GitHub Pages, or Cloudflare Pages work the same way
-   - For testing, you can also just double-click the file to open it locally
-7. **Connect.** Open the app → Settings → paste the URL and key → Connect → sign in.
+## Using it
 
-Add the page to your phone's home screen (Share → Add to Home Screen) and it behaves like an app.
+Open the site and sign in. Accounts are created by the owner in the Supabase dashboard (**Authentication → Users → Add user**), not from the app.
 
-## Moving to a different Supabase account later
+On a phone, use **Share → Add to Home Screen** and it opens like an app.
 
-Create the new project, run `schema.sql` there, then in the app go to Settings → Disconnect and connect with the new URL and key. To carry data across, export each table as CSV from the old project (Table Editor → Export) and import it in the new one.
+### What it does
 
-## Notes
+- **Home** — net position, cash in hand, bank balance, what clients owe, spend by department.
+- **Ledger** — every entry, grouped by day, with search and filters by production and direction.
+- **Productions** — each with a budget; spent, received and profit so far update from the ledger.
+- **Invoices** — open one and tap **Record payment** when a client pays; the unpaid amount updates and the invoice is marked paid once settled.
+- **Settings** — exchange rates, categories, payees, light/dark theme, and database connection.
 
-- All reporting is in LYD. Foreign-currency entries store the rate you confirmed at the time, so history doesn't shift when you update rates in Settings.
-- Invoice "Paid" and "Balance" come from transactions linked to that invoice.
-- The anon key is safe to put in the page; Row Level Security in the schema means nothing is readable without signing in — provided public sign-ups are off (step 3).
+All reporting is in LYD. Foreign-currency entries keep the rate confirmed at the time, so updating rates in Settings never changes history.
 
-## Deploy to Vercel from GitHub
+## Owner setup checklist (Supabase dashboard)
 
-1. Create an empty repository on GitHub (e.g. `fennec-finance`); private is fine.
-2. In this folder:
-   ```
-   git remote add origin https://github.com/YOUR-USER/fennec-finance.git
-   git push -u origin main
-   ```
-3. On vercel.com: Add New → Project → Import the repo → Deploy. No build settings needed; it's a static site.
-4. Open the Vercel URL → Settings → connect your Supabase project → sign in.
+The database is already connected. Two things must be done in the dashboard before real data goes in:
 
-Every push to `main` redeploys automatically.
+1. **Turn off public sign-ups.** **Authentication → Sign In / Providers → Allow new users to sign up → off.** The schema gives every signed-in user full access, and sign-ups are on by default, so without this anyone who finds the page could create an account and read the books.
+2. **Create the team's accounts.** **Authentication → Users → Add user**, email + password, one per person. Remove any accounts you don't recognise.
+
+Optional: **Authentication → Settings → Leaked password protection → on.**
+
+## Connecting a different Supabase project
+
+1. Create the project at supabase.com (free tier; Frankfurt is closest to Libya).
+2. **SQL Editor → New query**, paste `schema.sql`, Run.
+3. Do the owner checklist above in that project.
+4. **Project Settings → API**: copy the *Project URL* and the *anon public* key (never the service_role key).
+5. In the app: **Settings → Use a different Supabase project**, paste both, **Test & connect**. The choice is per browser; **Use default database** switches back.
+
+To make a new project the built-in default for everyone, change `DEFAULT_SB` near the top of the script in `index.html` and push.
+
+The anon key is safe to put in the page: Row Level Security in the schema means nothing is readable without signing in — provided public sign-ups are off.
+
+## Development
+
+No build step. Open `index.html` locally, or push to `main` to deploy. If the database library can't be loaded the app runs offline and says so; nothing is saved in that mode.
