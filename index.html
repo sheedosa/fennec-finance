@@ -1,30 +1,555 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fennec Finance</title>
-  <style>
-    :root { --bg: #fbfaf7; --fg: #1c1b19; --muted: #6b6860; --accent: #c8742c; }
-    @media (prefers-color-scheme: dark) {
-      :root { --bg: #161513; --fg: #f1efe9; --muted: #a29f96; --accent: #e09a55; }
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; min-height: 100vh; display: grid; place-items: center;
-      padding: 16px; background: var(--bg); color: var(--fg);
-      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    }
-    main { text-align: center; max-width: 32rem; }
-    h1 { font-size: clamp(2rem, 6vw, 3rem); margin: 0 0 .5rem; letter-spacing: -.02em; }
-    h1 span { color: var(--accent); }
-    p { color: var(--muted); margin: 0; line-height: 1.5; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fennec Finance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --ink:#17304F; --ink-2:#3B5272; --paper:#F6F5F1; --card:#FFFFFF; --line:#E4E2DB; --muted:#7A7F88;
+  --sand:#C9A96E; --sand-2:#EFE6D3; --in:#2A7A46; --in-2:#E3F1E7; --out:#B3382B; --out-2:#F7E4E1; --amber:#FFF0C7;
+  --side:#17304F; --r:10px; --nav-h:60px;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --ink:#E9EEF5; --ink-2:#B9C5D6; --paper:#141A23; --card:#1C2430; --line:#2B3542; --muted:#8C97A6;
+  --sand:#D4B47C; --sand-2:#2E2A20; --in:#6FCB8B; --in-2:#1E3326; --out:#F08A7D; --out-2:#3A2321; --amber:#3A3320; --side:#0E141C;
+}}
+:root[data-theme="dark"]{
+  --ink:#E9EEF5; --ink-2:#B9C5D6; --paper:#141A23; --card:#1C2430; --line:#2B3542; --muted:#8C97A6;
+  --sand:#D4B47C; --sand-2:#2E2A20; --in:#6FCB8B; --in-2:#1E3326; --out:#F08A7D; --out-2:#3A2321; --amber:#3A3320; --side:#0E141C;
+}
+*{box-sizing:border-box} html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0}
+body{font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+.num{font-variant-numeric:tabular-nums}
+
+/* shell */
+.shell{display:grid;grid-template-columns:220px 1fr;min-height:100%}
+.side{background:var(--side);border-right:1px solid var(--line);color:#fff;padding:22px 18px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+.brand{font-weight:700;font-size:20px;letter-spacing:-.01em;margin:0 0 4px 6px}
+.brand small{display:block;font-weight:400;font-size:12px;opacity:.65;letter-spacing:.02em}
+.nav{display:flex;flex-direction:column;gap:2px;margin-top:14px}
+.nav button{background:none;border:0;text-align:left;padding:10px 10px;border-radius:8px;color:rgba(255,255,255,.78);cursor:pointer;display:flex;gap:10px;align-items:center}
+.nav button svg{width:18px;height:18px;flex:none;opacity:.8}
+.nav button.on{background:rgba(255,255,255,.12);color:#fff}
+.nav button:hover{color:#fff}
+.side .spacer{flex:1}
+.side .status{font-size:12px;opacity:.7;margin-left:6px}
+.main{padding:28px 32px 100px;max-width:1120px;width:100%}
+.topbar{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+h1{font-size:26px;margin:0;letter-spacing:-.01em;font-weight:700}
+h2{font-size:15px;margin:0 0 10px;font-weight:600;color:var(--ink-2)}
+.tabbar{display:none}
+
+/* primary action */
+.fab{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--sand);color:#1E1A10;border:0;border-radius:999px;padding:14px 20px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;display:flex;gap:8px;align-items:center;z-index:30}
+.fab svg{width:18px;height:18px}
+
+/* cards & tables */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(4,1fr)}
+.kpi .l{font-size:12px;color:var(--muted);margin-bottom:2px}
+.kpi .v{font-size:26px;font-weight:700;letter-spacing:-.02em}
+.kpi.net{background:var(--sand-2);border-color:transparent}
+.kpi.neg .v{color:var(--out)}
+.two{grid-template-columns:3fr 2fr}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-weight:600;color:var(--muted);font-size:12px;padding:0 8px 8px;border-bottom:1px solid var(--line)}
+td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+.tbl-wrap{overflow-x:auto}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:500;background:var(--line)}
+.pill.Active,.pill.Paid,.pill.Delivered{background:var(--in-2);color:var(--in)}
+.pill.Pitching,.pill.Sent,.pill.Draft{background:var(--amber)}
+.pill.Overdue{background:var(--out-2);color:var(--out)}
+.in{color:var(--in);font-weight:600} .out{color:var(--ink)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;background:var(--sand)}
+.bar.over i{background:var(--out)}
+.rowbtn{cursor:pointer} .rowbtn:hover td{background:rgba(0,0,0,.025)}
+.empty{color:var(--muted);padding:22px 8px;text-align:center}
+.muted{color:var(--muted)} .small{font-size:12px}
+
+/* ledger list (transactions) */
+.day{margin-top:18px}
+.day h3{font-size:12px;font-weight:600;color:var(--muted);margin:0 0 6px 2px}
+.ledger{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.tx{display:grid;grid-template-columns:1fr auto;gap:2px 14px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.tx:last-child{border-bottom:0} .tx:hover{background:rgba(0,0,0,.025)}
+.tx .t{font-weight:500;grid-column:1;grid-row:1} .tx .s{font-size:12px;color:var(--muted);grid-column:1;grid-row:2}
+.tx .a{text-align:right;font-weight:600;grid-column:2;grid-row:1/3;align-self:center}
+.tx .a small{display:block;font-weight:400;color:var(--muted);font-size:11px}
+
+/* filters */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.filters select,.filters input{padding:7px 10px;border:1px solid var(--line);background:var(--card);border-radius:8px}
+
+/* buttons & forms */
+.btn{border:1px solid var(--line);background:var(--card);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:500}
+.btn.primary{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.btn.danger{color:var(--out)}
+.btn:disabled{opacity:.5;cursor:default}
+.f{display:grid;gap:12px}
+.f label{display:grid;gap:4px;font-size:12px;color:var(--muted)}
+.f input,.f select,.f textarea{padding:10px 11px;border:1px solid var(--line);background:var(--paper);border-radius:8px;font-size:15px;width:100%}
+.f .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f .row3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;border:0;background:var(--paper);padding:10px;cursor:pointer;font-weight:600;color:var(--muted)}
+.seg button.on.In{background:var(--in-2);color:var(--in)} .seg button.on.Out{background:var(--out-2);color:var(--out)}
+.hint{font-size:12px;color:var(--muted)}
+.actions{display:flex;justify-content:space-between;gap:8px;margin-top:6px}
+
+/* sheet / modal */
+.scrim{position:fixed;inset:0;background:rgba(10,15,25,.45);display:none;z-index:40}
+.scrim.open{display:block}
+.sheet{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100% - 24px));max-height:calc(100% - 48px);overflow:auto;background:var(--card);border-radius:14px;padding:20px;z-index:50;display:none}
+.sheet.open{display:block}
+body.locked{overflow:hidden}
+body.locked .fab{display:none}
+.sheet .actions{position:sticky;bottom:-20px;margin:8px -20px -20px;padding:12px 20px calc(16px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line)}
+.statement{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:start;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+.hero .l{font-size:14px;color:var(--muted)}
+.hero .v{font-size:52px;font-weight:700;letter-spacing:-.03em;line-height:1.05;margin:2px 0 6px}
+.hero .v small{font-size:16px;font-weight:500;color:var(--muted);letter-spacing:0;margin-left:6px}
+.hero .v.neg{color:var(--out)}
+.hero .sub{color:var(--muted);font-size:14px}
+.hero .sub b{color:var(--ink);font-weight:600}
+.facts{margin:4px 0 0;padding:0;list-style:none}
+.facts li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.facts li:first-child{border-top:1px solid var(--line)}
+.facts li b{font-weight:600}
+.facts li i{font-style:normal;font-size:12px;color:var(--out);margin-left:8px}
+.section{margin-bottom:26px}
+.section h2{display:flex;justify-content:space-between;align-items:baseline;font-size:17px;color:var(--ink);margin-bottom:6px}
+.section h2 span{font-size:13px;color:var(--muted);font-weight:400}
+.dept{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.dept:last-child{border-bottom:0}
+.dept .bar{grid-column:1/-1;height:4px;margin-top:4px}
+.rows{display:flex;flex-direction:column}
+.prow{display:grid;grid-template-columns:1.6fr 100px 110px 1fr;gap:4px 14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.prow:last-child{border-bottom:0} .prow:hover{background:rgba(0,0,0,.025)}
+.prow .n{font-weight:500} .prow .c{font-size:12px;color:var(--muted)}
+.prow .m{font-size:13px;color:var(--muted);text-align:right}
+.prow .m b{color:var(--ink);font-weight:600}
+.irow{display:grid;grid-template-columns:1.4fr 1fr 110px 100px;gap:4px 14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.irow:last-child{border-bottom:0} .irow:hover{background:rgba(0,0,0,.025)}
+details.card{padding:0} details.card summary{padding:14px 18px;cursor:pointer;font-weight:600;color:var(--ink-2);list-style:none;display:flex;justify-content:space-between}
+details.card summary::after{content:"+";color:var(--muted)} details.card[open] summary::after{content:"–"}
+details.card .inner{padding:0 18px 16px}
+.sheet h2{color:var(--ink);font-size:18px;margin-bottom:14px}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--card);padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:60}
+.toast.show{opacity:1}
+.note{background:var(--sand-2);border-radius:var(--r);padding:12px 14px;font-size:14px}
+code{background:var(--paper);padding:1px 5px;border-radius:4px;font-size:13px}
+
+/* auth */
+.auth{min-height:100%;display:grid;place-items:center;padding:20px}
+.auth .card{width:min(380px,100%)}
+
+@media (max-width:820px){
+  .shell{grid-template-columns:1fr}
+  .side{display:none}
+  .main{padding:18px 16px calc(var(--nav-h) + 90px)}
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpi .v{font-size:22px}
+  .two{grid-template-columns:1fr}
+  .statement{grid-template-columns:1fr;gap:18px}
+  .hero .v{font-size:44px}
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card);border-top:1px solid var(--line);z-index:30}
+  .tabbar button{flex:1;border:0;background:none;color:var(--muted);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px;padding-top:8px;cursor:pointer}
+  .tabbar button svg{width:22px;height:22px}
+  .tabbar button.on{color:var(--ink)}
+  .fab{bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));padding:14px 16px}
+  .prow{grid-template-columns:1fr auto;padding:12px 0}
+  .prow .bar{grid-column:1/-1} .prow .m{grid-column:1/-1;text-align:left}
+  .irow{grid-template-columns:1fr auto} .irow .d{grid-column:1/-1;font-size:12px;color:var(--muted)}
+  .filters{position:sticky;top:0;background:var(--paper);padding:6px 0;z-index:5}
+  .fab span{display:none}
+  .sheet{top:auto;bottom:0;left:0;transform:none;width:100%;border-radius:16px 16px 0 0;max-height:92%;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+  .f .row3{grid-template-columns:1fr 1fr 1fr}
+}
+@media (prefers-reduced-motion: reduce){ .toast{transition:none} }
+:focus-visible{outline:2px solid var(--sand);outline-offset:2px}
+</style>
 </head>
 <body>
-  <main>
-    <h1>Fennec <span>Finance</span></h1>
-    <p>Coming soon.</p>
-  </main>
+<div id="app"></div>
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   Fennec Finance — single-file app.
+   Data layer: Supabase when configured (Settings), otherwise an
+   in-memory demo so the UI can be explored before connecting.
+   ============================================================ */
+const ICONS = {
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+  list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
+  film:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/></svg>',
+  doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></svg>',
+  cog:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>'
+};
+const STATUS = ['Pitching','Active','Delivered','Closed'];
+const INV_STATUS = ['Draft','Sent','Paid','Cancelled'];
+const METHODS = ['Cash','Bank Transfer','Cheque','Card'];
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-'+Math.random().toString(36).slice(2));
+const today = () => new Date().toISOString().slice(0,10);
+const fmt = n => { n = Number(n||0); const s = Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:0}); return n<0?`−${s}`:s; };
+const fmtD = d => d ? new Date(d+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = { get(k){ try{return localStorage.getItem(k)}catch(e){return null} }, set(k,v){ try{localStorage.setItem(k,v)}catch(e){} }, del(k){ try{localStorage.removeItem(k)}catch(e){} } };
+
+/* ---------- demo data (used until Supabase is connected) ---------- */
+function demoData(){
+  const p1=uid(), p2=uid(), p3=uid(), i1=uid(), i2=uid();
+  return {
+    projects:[
+      {id:p1,name:'Desert Roads — LPC Brand Film',client:'Libya Petroleum Co.',status:'Active',budget:85000,notes:'Delivery mid-Nov'},
+      {id:p2,name:'Tripoli Nights — Music Video',client:'Ahmed Fakroun',status:'Active',budget:22000,notes:''},
+      {id:p3,name:'Sea of Sand — Documentary',client:'Al-Mukhtar Foundation',status:'Pitching',budget:140000,notes:'Awaiting contract'},
+    ],
+    invoices:[
+      {id:i1,number:'INV-001',project_id:p1,client:'Libya Petroleum Co.',issued:'2026-09-01',due:'2026-09-15',amount:42500,status:'Paid'},
+      {id:i2,number:'INV-002',project_id:p2,client:'Ahmed Fakroun',issued:'2026-09-10',due:'2026-09-25',amount:11000,status:'Paid'},
+      {id:uid(),number:'INV-003',project_id:p1,client:'Libya Petroleum Co.',issued:'2026-09-28',due:'2026-10-12',amount:42500,status:'Sent'},
+    ],
+    transactions:[
+      {id:uid(),date:'2026-09-03',project_id:p1,direction:'In',category:'Deposit / Advance',payee:'Libya Petroleum Co.',description:'50% advance',amount:42500,currency:'LYD',fx_rate:1,method:'Bank Transfer',invoice_id:i1},
+      {id:uid(),date:'2026-09-05',project_id:p1,direction:'Out',category:'Equipment',payee:'Tripoli Camera House',description:'Alexa Mini + lenses, 5 days',amount:6500,currency:'LYD',fx_rate:1,method:'Bank Transfer',receipt:'RC-1001'},
+      {id:uid(),date:'2026-09-08',project_id:p1,direction:'Out',category:'Crew & Talent',payee:'Ahmed Al-Mansouri',description:'DOP × 5 days',amount:2250,currency:'LYD',fx_rate:1,method:'Cash',receipt:'RC-1002'},
+      {id:uid(),date:'2026-09-09',project_id:p1,direction:'Out',category:'Locations & Permits',payee:'Petty Cash',description:'Ghadames filming permit',amount:1800,currency:'LYD',fx_rate:1,method:'Cash'},
+      {id:uid(),date:'2026-09-12',project_id:p1,direction:'Out',category:'Transport & Fuel',payee:'Petty Cash',description:'Fuel + 4×4 hire',amount:3200,currency:'LYD',fx_rate:1,method:'Cash'},
+      {id:uid(),date:'2026-09-15',project_id:p2,direction:'Out',category:'Post-Production',payee:'Mediterranean Post',description:'Offline edit',amount:1500,currency:'USD',fx_rate:6.85,method:'Bank Transfer'},
+      {id:uid(),date:'2026-09-18',project_id:p2,direction:'In',category:'Client Payment',payee:'Ahmed Fakroun',description:'Final payment',amount:11000,currency:'LYD',fx_rate:1,method:'Cash',invoice_id:i2},
+      {id:uid(),date:'2026-09-22',project_id:p2,direction:'Out',category:'Post-Production',payee:'Mediterranean Post',description:'Grade + online',amount:800,currency:'EUR',fx_rate:7.4,method:'Bank Transfer'},
+      {id:uid(),date:'2026-09-30',project_id:p1,direction:'Out',category:'Catering & Accommodation',payee:'Petty Cash',description:'Crew meals, 5 days',amount:1250,currency:'LYD',fx_rate:1,method:'Cash'},
+    ],
+    settings:{
+      fx_rates:{LYD:1,USD:6.85,EUR:7.40},
+      categories:[
+        {name:'Crew & Talent',direction:'Out',department:'Production'},{name:'Equipment',direction:'Out',department:'Production'},
+        {name:'Locations & Permits',direction:'Out',department:'Production'},{name:'Transport & Fuel',direction:'Out',department:'Production'},
+        {name:'Catering & Accommodation',direction:'Out',department:'Production'},{name:'Travel',direction:'Out',department:'Production'},
+        {name:'Post-Production',direction:'Out',department:'Post'},{name:'Office & Admin',direction:'Out',department:'Overhead'},
+        {name:'Marketing',direction:'Out',department:'Overhead'},{name:'Bank & FX Fees',direction:'Out',department:'Overhead'},
+        {name:'Other Expense',direction:'Out',department:'Overhead'},{name:'Client Payment',direction:'In',department:'Revenue'},
+        {name:'Deposit / Advance',direction:'In',department:'Revenue'},{name:'Grant / Sponsorship',direction:'In',department:'Revenue'},
+        {name:'Other Income',direction:'In',department:'Revenue'}],
+      payees:['Petty Cash','Tripoli Camera House','Ahmed Al-Mansouri','Mediterranean Post','Libya Petroleum Co.','Ahmed Fakroun']
+    }
+  };
+}
+
+/* ---------- data layer ---------- */
+const DemoDB = {
+  mode:'demo', data:null,
+  async init(){ this.data = demoData(); },
+  async all(){ const d=this.data; return {projects:[...d.projects],invoices:[...d.invoices],transactions:[...d.transactions],settings:JSON.parse(JSON.stringify(d.settings))}; },
+  async upsert(t,row){ const arr=this.data[t]; const i=arr.findIndex(x=>x.id===row.id); if(i>=0) arr[i]={...arr[i],...row}; else arr.push({...row,id:row.id||uid()}); },
+  async remove(t,id){ this.data[t]=this.data[t].filter(x=>x.id!==id); },
+  async saveSetting(k,v){ this.data.settings[k]=v; },
+  async signOut(){}
+};
+function SupaDB(url,key){
+  const sb = window.supabase.createClient(url,key);
+  return {
+    mode:'supabase', sb,
+    async session(){ const {data}=await sb.auth.getSession(); return data.session; },
+    async signIn(email,password){ const {error}=await sb.auth.signInWithPassword({email,password}); if(error) throw error; },
+    async signOut(){ await sb.auth.signOut(); },
+    async all(){
+      const [p,i,t,s] = await Promise.all([
+        sb.from('projects').select('*').order('created_at'),
+        sb.from('invoices').select('*').order('issued',{ascending:false}),
+        sb.from('transactions').select('*').order('date',{ascending:false}).order('created_at',{ascending:false}),
+        sb.from('settings').select('*')]);
+      for(const r of [p,i,t,s]) if(r.error) throw r.error;
+      const settings={}; for(const row of s.data) settings[row.key]=row.value;
+      return {projects:p.data,invoices:i.data,transactions:t.data,settings};
+    },
+    async upsert(t,row){ const r={...row}; delete r.amount_lyd; if(!r.id) delete r.id; const {error}=await sb.from(t).upsert(r); if(error) throw error; },
+    async remove(t,id){ const {error}=await sb.from(t).delete().eq('id',id); if(error) throw error; },
+    async saveSetting(k,v){ const {error}=await sb.from('settings').upsert({key:k,value:v,updated_at:new Date().toISOString()}); if(error) throw error; }
+  };
+}
+
+/* ---------- app state ---------- */
+let DB, D = null, page = 'home', txFilter = {project:'',dir:'',q:''};
+const $ = s => document.querySelector(s);
+const app = $('#app');
+const amountLYD = t => Number(t.amount_lyd ?? (t.amount * (t.fx_rate||1)));
+const projName = id => (D.projects.find(p=>p.id===id)||{}).name || '—';
+const dept = cat => (D.settings.categories.find(c=>c.name===cat)||{}).department || 'Other';
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+
+async function boot(){
+  const url=store.get('sb_url'), key=store.get('sb_key');
+  if(url && key && window.supabase){ DB = SupaDB(url,key); }
+  else { DB = DemoDB; await DB.init(); }
+  if(DB.mode==='supabase'){
+    const s = await DB.session().catch(()=>null);
+    if(!s){ renderAuth(); return; }
+  }
+  await reload();
+}
+async function reload(){
+  try{ D = await DB.all(); render(); }
+  catch(e){ renderError(e); }
+}
+
+/* ---------- derived numbers ---------- */
+function stats(){
+  const tx=D.transactions;
+  const sum=(f)=>tx.filter(f).reduce((a,t)=>a+amountLYD(t),0);
+  const inc=sum(t=>t.direction==='In'), exp=sum(t=>t.direction==='Out');
+  const cash=sum(t=>t.direction==='In'&&t.method==='Cash')-sum(t=>t.direction==='Out'&&t.method==='Cash');
+  const bank=sum(t=>t.direction==='In'&&t.method==='Bank Transfer')-sum(t=>t.direction==='Out'&&t.method==='Bank Transfer');
+  const paidFor=id=>sum(t=>t.direction==='In'&&t.invoice_id===id);
+  const inv=D.invoices.map(i=>({...i,paid:paidFor(i.id),balance:i.status==='Cancelled'?0:Number(i.amount)-paidFor(i.id),overdue:i.status==='Sent'&&i.due&&i.due<today()}));
+  const outstanding=inv.filter(i=>i.status==='Sent').reduce((a,i)=>a+i.balance,0);
+  const overdue=inv.filter(i=>i.overdue).length;
+  const projects=D.projects.map(p=>{const spent=sum(t=>t.direction==='Out'&&t.project_id===p.id), coll=sum(t=>t.direction==='In'&&t.project_id===p.id);
+    return {...p,spent,collected:coll,remaining:Number(p.budget)-spent,used:p.budget>0?spent/Number(p.budget):0,net:coll-spent};});
+  const depts={}; tx.filter(t=>t.direction==='Out').forEach(t=>{const d=dept(t.category); depts[d]=(depts[d]||0)+amountLYD(t);});
+  return {inc,exp,net:inc-exp,cash,bank,outstanding,overdue,inv,projects,depts,active:D.projects.filter(p=>p.status==='Active').length};
+}
+
+/* ---------- rendering ---------- */
+function shell(content){
+  const items=[['home','Home',ICONS.home],['tx','Ledger',ICONS.list],['projects','Productions',ICONS.film],['invoices','Invoices',ICONS.doc],['settings','Settings',ICONS.cog]];
+  const nav=cls=>items.map(([k,l,ic])=>`<button class="${page===k?'on':''}" data-nav="${k}">${ic}<span>${l}</span></button>`).join('');
+  app.innerHTML=`<div class="shell">
+    <aside class="side"><div class="brand">Fennec<small>Production finance</small></div><nav class="nav">${nav()}</nav>
+      <div class="spacer"></div><div class="status">${DB.mode==='demo'?'Sample data':'Live'}</div></aside>
+    <main class="main">${content}</main></div>
+    <nav class="tabbar">${nav()}</nav>
+    <button class="fab" id="fab">${ICONS.plus}<span>Add entry</span></button>`;
+  app.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{page=b.dataset.nav;render();window.scrollTo(0,0);});
+  $('#fab').onclick=()=>openTx();
+}
+function render(){
+  const s=stats();
+  const views={home:homeView,tx:txView,projects:projectsView,invoices:invoicesView,settings:settingsView};
+  shell(views[page](s));
+  bind(s);
+}
+
+function homeView(s){
+  const recent=[...D.transactions].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,8);
+  const dsum=Object.values(s.depts).reduce((a,b)=>a+b,0);
+  const open=s.projects.filter(p=>p.status!=='Closed');
+  const dateStr=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  return `<div class="topbar"><h1>Fennec Productions</h1><span class="muted small">${dateStr}</span></div>
+  ${DB.mode==='demo'?`<div class="note" style="margin-bottom:18px">Sample data. Connect your database in <a href="#" data-nav="settings">Settings</a> to start for real.</div>`:''}
+  <section class="statement">
+    <div class="hero"><div class="l">What we have after all money in and out</div><div class="v num ${s.net<0?'neg':''}">${fmt(s.net)}<small>LYD</small></div>
+      <div class="sub"><b class="num">${fmt(s.inc)}</b> received · <b class="num">${fmt(s.exp)}</b> spent</div></div>
+    <ul class="facts">
+      <li><span>Cash in hand</span><b class="num">${fmt(s.cash)}</b></li>
+      <li><span>In the bank</span><b class="num">${fmt(s.bank)}</b></li>
+      <li><span>Owed to us by clients</span><b class="num">${fmt(s.outstanding)}${s.overdue?`<i>${s.overdue} overdue</i>`:''}</b></li>
+      <li><span>Productions in progress</span><b>${s.active}</b></li>
+    </ul>
+  </section>
+  <div class="grid two">
+    <div>
+      <section class="section"><h2>Productions <span>${open.length} open</span></h2><div class="card">${projectTable(open,true)}</div></section>
+      <section class="section"><h2>Latest entries</h2><div class="ledger">
+        ${recent.map(t=>`<div class="tx" data-tx="${t.id}"><div class="t">${esc(t.payee||t.category)}</div><div class="s">${fmtD(t.date)} · ${esc(projName(t.project_id))}${t.description?' · '+esc(t.description):''}</div><div class="a num ${t.direction==='In'?'in':''}">${t.direction==='In'?'+':'−'}${fmt(amountLYD(t))}</div></div>`).join('')||'<div class="empty">Nothing logged yet</div>'}
+      </div></section>
+    </div>
+    <section class="section"><h2>Where the money went <span>all time</span></h2><div class="card">
+      ${Object.entries(s.depts).sort((a,b)=>b[1]-a[1]).map(([d,v])=>`<div class="dept"><span>${esc(d)}</span><span class="num"><b>${fmt(v)}</b> <span class="muted small">${dsum?Math.round(v/dsum*100):0}%</span></span><div class="bar"><i style="width:${dsum?v/dsum*100:0}%"></i></div></div>`).join('')||'<div class="empty">No spending yet</div>'}
+    </div></section>
+  </div>`;
+}
+function projectTable(list,compact){
+  if(!list.length) return '<div class="empty">No productions yet. Add one and give it a budget.</div>';
+  return `<div class="rows">${list.map(p=>`<div class="prow" data-proj="${p.id}">
+    <div><div class="n">${esc(p.name)}</div><div class="c">${esc(p.client||'')}</div></div>
+    <div><span class="pill ${p.status}">${p.status}</span></div>
+    <div class="bar ${p.used>1?'over':''}"><i style="width:${Math.min(100,p.used*100)}%"></i></div>
+    <div class="m num"><b>${fmt(p.spent)}</b> spent of ${fmt(p.budget)}${p.remaining<0?` · <b style="color:var(--out)">${fmt(-p.remaining)} over</b>`:` · ${fmt(p.remaining)} left`}${compact?'':` · ${p.net>=0?'profit':'loss so far'} <b style="${p.net<0?'color:var(--out)':''}">${fmt(Math.abs(p.net))}</b>`}</div>
+  </div>`).join('')}</div>`;
+}
+function txView(){
+  let list=[...D.transactions];
+  if(txFilter.project) list=list.filter(t=>t.project_id===txFilter.project);
+  if(txFilter.dir) list=list.filter(t=>t.direction===txFilter.dir);
+  if(txFilter.q){const q=txFilter.q.toLowerCase(); list=list.filter(t=>[t.payee,t.description,t.category,t.receipt].join(' ').toLowerCase().includes(q));}
+  list.sort((a,b)=>b.date.localeCompare(a.date));
+  const groups={}; list.forEach(t=>{(groups[t.date]=groups[t.date]||[]).push(t)});
+  const total=list.reduce((a,t)=>a+(t.direction==='In'?1:-1)*amountLYD(t),0);
+  return `<div class="topbar"><h1>Ledger</h1><span class="muted small num">${list.length} entries · ${total>=0?'+':''}${fmt(total)} LYD</span></div>
+  <div class="filters">
+    <select id="f-proj"><option value="">All projects</option>${D.projects.map(p=>`<option value="${p.id}" ${txFilter.project===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select>
+    <select id="f-dir"><option value="">Everything</option><option value="In" ${txFilter.dir==='In'?'selected':''}>Received</option><option value="Out" ${txFilter.dir==='Out'?'selected':''}>Spent</option></select>
+    <input id="f-q" placeholder="Search payee, description, receipt" value="${esc(txFilter.q)}">
+  </div>
+  ${Object.keys(groups).length?Object.entries(groups).map(([d,arr])=>`<div class="day"><h3>${new Date(d+'T00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'})}</h3><div class="ledger">
+    ${arr.map(t=>`<div class="tx" data-tx="${t.id}"><div class="t">${esc(t.payee||'—')} <span class="muted">· ${esc(t.category)}</span></div><div class="s">${esc(projName(t.project_id))}${t.description?' · '+esc(t.description):''}${t.receipt?' · '+esc(t.receipt):''}</div>
+      <div class="a num ${t.direction==='In'?'in':''}">${t.direction==='In'?'+':'−'}${fmt(amountLYD(t))}${t.currency!=='LYD'?`<small>${fmt(t.amount)} ${t.currency} @ ${t.fx_rate}</small>`:`<small>${esc(t.method)}</small>`}</div></div>`).join('')}
+  </div></div>`).join(''):'<div class="card empty">Nothing here yet. Tap + to log the first payment.</div>'}`;
+}
+function projectsView(s){
+  return `<div class="topbar"><h1>Productions</h1><button class="btn primary" id="add-proj">New production</button></div>
+  <div class="card">${projectTable(s.projects,false)}</div>`;
+}
+function invoicesView(s){
+  const rows=[...s.inv].sort((a,b)=>(b.issued||'').localeCompare(a.issued||''));
+  return `<div class="topbar"><h1>Invoices</h1><button class="btn primary" id="add-inv">New invoice</button></div>
+  <div class="card">${rows.length?`<div class="rows">${rows.map(i=>`<div class="irow" data-inv="${i.id}">
+    <div><div style="font-weight:500">${esc(i.number)} <span class="muted">· ${esc(i.client||'')}</span></div><div class="d muted small">${esc(projName(i.project_id))}</div></div>
+    <div class="d muted small num" style="${i.overdue?'color:var(--out);font-weight:600':''}">${i.due?'Due '+fmtD(i.due):''}</div>
+    <div class="num" style="text-align:right"><b>${fmt(i.amount)}</b>${i.balance>0&&i.status!=='Draft'?`<div class="muted small">${fmt(i.balance)} still unpaid</div>`:''}</div>
+    <div style="text-align:right"><span class="pill ${i.overdue?'Overdue':i.status}">${i.overdue?'Overdue':i.status}</span></div>
+  </div>`).join('')}</div>`:'<div class="empty">No invoices yet.</div>'}</div>
+  <p class="hint" style="margin-top:10px">When a client pays, add it in the ledger and pick the invoice. The unpaid amount updates by itself.</p>`;
+}
+function settingsView(){
+  const fx=D.settings.fx_rates, onClaude=/claude\.(ai|site)$/.test(location.hostname);
+  return `<div class="topbar"><h1>Settings</h1></div>
+  <div class="grid two">
+    <div>
+      <div class="card" style="margin-bottom:14px"><h2>Database connection</h2>
+        ${DB.mode==='supabase'?`<p>Connected to <code>${esc(store.get('sb_url'))}</code>.</p><div class="actions"><button class="btn" id="signout">Sign out</button><button class="btn danger" id="disconnect">Disconnect</button></div>`
+        :`<p class="muted small" style="margin-top:0">Running on sample data. To connect your own Supabase project: run <code>schema.sql</code> in its SQL editor, add a user under Authentication, then paste the project URL and anon key here. ${onClaude?'<strong>This preview on claude.ai cannot reach Supabase — host the file (Netlify, Vercel, GitHub Pages) to connect.</strong>':''}</p>
+        <div class="f"><label>Project URL<input id="sb-url" placeholder="https://xxxx.supabase.co"></label><label>Anon public key<input id="sb-key" placeholder="eyJ..."></label><div class="actions"><span></span><button class="btn primary" id="connect">Connect</button></div></div>`}
+      </div>
+      <div class="card"><h2>Exchange rates to LYD</h2>
+        <div class="f"><div class="row3">${['LYD','USD','EUR'].map(c=>`<label>${c}<input type="number" step="0.0001" id="fx-${c}" value="${fx[c]??''}" ${c==='LYD'?'disabled':''}></label>`).join('')}</div>
+        <div class="hint">Used as the default when you add a foreign-currency transaction. Each entry keeps the rate you confirm at the time.</div>
+        <div class="actions"><span></span><button class="btn primary" id="save-fx">Save rates</button></div></div>
+      </div>
+    </div>
+    <div>
+      <details class="card" style="margin-bottom:14px"><summary>Categories (${D.settings.categories.length})</summary><div class="inner">
+        <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>In/Out</th><th>Department</th><th></th></tr></thead><tbody>
+        ${D.settings.categories.map((c,i)=>`<tr><td>${esc(c.name)}</td><td>${c.direction}</td><td>${esc(c.department)}</td><td class="r"><button class="btn small" data-delcat="${i}" style="padding:2px 8px">×</button></td></tr>`).join('')}</tbody></table></div>
+        <div class="f" style="margin-top:12px"><div class="row3"><input id="cat-name" placeholder="New category"><select id="cat-dir"><option>Out</option><option>In</option></select><select id="cat-dept"><option>Production</option><option>Post</option><option>Overhead</option><option>Revenue</option></select></div>
+        <div class="actions"><span></span><button class="btn" id="add-cat">Add category</button></div></div>
+      </div></details>
+      <details class="card"><summary>Payees (${D.settings.payees.length})</summary><div class="inner">
+        <p class="muted small" style="margin-top:0">${D.settings.payees.map(esc).join(' · ')}</p>
+        <div class="f"><div class="row"><input id="payee-name" placeholder="New payee"><button class="btn" id="add-payee">Add payee</button></div></div>
+      </div></details>
+    </div>
+  </div>`;
+}
+function renderAuth(){
+  app.innerHTML=`<div class="auth"><div class="card"><div class="brand" style="color:var(--ink);margin:0 0 14px">Fennec Finance</div>
+    <div class="f"><label>Email<input id="au-email" type="email" autocomplete="username"></label><label>Password<input id="au-pass" type="password" autocomplete="current-password"></label>
+    <div id="au-err" class="hint" style="color:var(--out)"></div>
+    <button class="btn primary" id="au-go">Sign in</button>
+    <button class="btn" id="au-disc">Use a different database</button></div></div></div>`;
+  $('#au-go').onclick=async()=>{ try{ await DB.signIn($('#au-email').value.trim(),$('#au-pass').value); await reload(); }catch(e){ $('#au-err').textContent=e.message||'Sign-in failed'; } };
+  $('#au-pass').onkeydown=e=>{ if(e.key==='Enter') $('#au-go').click(); };
+  $('#au-disc').onclick=()=>{ store.del('sb_url'); store.del('sb_key'); location.reload(); };
+}
+function renderError(e){
+  app.innerHTML=`<div class="auth"><div class="card"><h2>Couldn't load data</h2><p class="muted small">${esc(e.message||e)}</p><p class="hint">Check that schema.sql has been run in this Supabase project and that your user has signed in.</p><button class="btn" id="e-disc">Disconnect and use demo</button></div></div>`;
+  $('#e-disc').onclick=()=>{ store.del('sb_url'); store.del('sb_key'); location.reload(); };
+}
+
+/* ---------- interactions ---------- */
+function bind(s){
+  app.querySelectorAll('[data-tx]').forEach(el=>el.onclick=()=>openTx(D.transactions.find(t=>t.id===el.dataset.tx)));
+  app.querySelectorAll('[data-proj]').forEach(el=>el.onclick=()=>openProject(D.projects.find(p=>p.id===el.dataset.proj)));
+  app.querySelectorAll('[data-inv]').forEach(el=>el.onclick=()=>openInvoice(D.invoices.find(i=>i.id===el.dataset.inv)));
+  app.querySelectorAll('a[data-nav]').forEach(a=>a.onclick=e=>{e.preventDefault();page=a.dataset.nav;render();});
+  const q=$('#add-proj'); if(q) q.onclick=()=>openProject();
+  const w=$('#add-inv'); if(w) w.onclick=()=>openInvoice();
+  const fp=$('#f-proj'); if(fp){ fp.onchange=()=>{txFilter.project=fp.value;render();}; $('#f-dir').onchange=e=>{txFilter.dir=e.target.value;render();};
+    const fq=$('#f-q'); let t; fq.oninput=()=>{clearTimeout(t);t=setTimeout(()=>{txFilter.q=fq.value;render();$('#f-q').focus();},250)}; }
+  if(page==='settings'){
+    const c=$('#connect'); if(c) c.onclick=()=>{ const u=$('#sb-url').value.trim(), k=$('#sb-key').value.trim(); if(!u||!k) return toast('Enter both the URL and the key'); store.set('sb_url',u); store.set('sb_key',k); location.reload(); };
+    const so=$('#signout'); if(so) so.onclick=async()=>{ await DB.signOut(); location.reload(); };
+    const dc=$('#disconnect'); if(dc) dc.onclick=()=>{ if(confirm('Disconnect this browser from the database? Your data stays in Supabase.')){ store.del('sb_url'); store.del('sb_key'); location.reload(); } };
+    $('#save-fx').onclick=async()=>{ const fx={LYD:1,USD:Number($('#fx-USD').value)||1,EUR:Number($('#fx-EUR').value)||1}; await save(()=>DB.saveSetting('fx_rates',fx),'Rates saved'); };
+    $('#add-cat').onclick=async()=>{ const n=$('#cat-name').value.trim(); if(!n) return; const cats=[...D.settings.categories,{name:n,direction:$('#cat-dir').value,department:$('#cat-dept').value}]; await save(()=>DB.saveSetting('categories',cats),'Category added'); };
+    app.querySelectorAll('[data-delcat]').forEach(b=>b.onclick=async()=>{ const cats=D.settings.categories.filter((_,i)=>i!==Number(b.dataset.delcat)); await save(()=>DB.saveSetting('categories',cats),'Category removed'); });
+    $('#add-payee').onclick=async()=>{ const n=$('#payee-name').value.trim(); if(!n) return; await save(()=>DB.saveSetting('payees',[...new Set([...D.settings.payees,n])]),'Payee added'); };
+  }
+}
+async function save(fn,msg){ try{ await fn(); await reload(); toast(msg); }catch(e){ toast('Could not save: '+(e.message||e)); } }
+function openSheet(html){ $('#sheet').innerHTML=html; $('#sheet').classList.add('open'); $('#scrim').classList.add('open'); document.body.classList.add('locked'); const f=$('#sheet input,#sheet select'); if(f) f.focus(); }
+function closeSheet(){ $('#sheet').classList.remove('open'); $('#scrim').classList.remove('open'); document.body.classList.remove('locked'); }
+$('#scrim').onclick=closeSheet;
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSheet(); });
+
+function openTx(t){
+  const edit=!!t; t=t||{date:today(),direction:'Out',currency:'LYD',method:'Cash',project_id:D.projects[0]?.id||''};
+  const fx=D.settings.fx_rates;
+  const cats=dir=>D.settings.categories.filter(c=>c.direction===dir).map(c=>`<option ${t.category===c.name?'selected':''}>${esc(c.name)}</option>`).join('');
+  openSheet(`<h2>${edit?'Edit entry':'New entry'}</h2><div class="f">
+    <div class="seg" id="seg"><button class="${t.direction==='Out'?'on':''} Out" data-d="Out">We paid</button><button class="${t.direction==='In'?'on':''} In" data-d="In">We received</button></div>
+    <div class="row3"><label>Amount<input id="t-amt" type="number" inputmode="decimal" step="0.01" value="${t.amount??''}" required></label>
+      <label>Currency<select id="t-cur">${Object.keys(fx).map(c=>`<option ${t.currency===c?'selected':''}>${c}</option>`).join('')}</select></label>
+      <label>Rate to LYD<input id="t-fx" type="number" step="0.0001" value="${t.fx_rate??1}"></label></div>
+    <div class="row"><label>Date<input id="t-date" type="date" value="${t.date}"></label><label>Paid by<select id="t-method">${METHODS.map(m=>`<option ${t.method===m?'selected':''}>${m}</option>`).join('')}</select></label></div>
+    <label>Project<select id="t-proj">${D.projects.map(p=>`<option value="${p.id}" ${t.project_id===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}<option value="" ${!t.project_id?'selected':''}>— No project (overhead) —</option></select></label>
+    <label>Category<select id="t-cat">${cats(t.direction)}</select></label>
+    <label>Who<input id="t-payee" list="payees" value="${esc(t.payee||'')}"><datalist id="payees">${D.settings.payees.map(p=>`<option value="${esc(p)}">`).join('')}</datalist></label>
+    <label>For what<input id="t-desc" value="${esc(t.description||'')}" placeholder="e.g. Fuel for the desert shoot"></label>
+    <div class="row"><label>Receipt ref<input id="t-rec" value="${esc(t.receipt||'')}" placeholder="optional"></label>
+      <label>Settles invoice<select id="t-inv"><option value="">—</option>${D.invoices.filter(i=>i.status!=='Cancelled').map(i=>`<option value="${i.id}" ${t.invoice_id===i.id?'selected':''}>${esc(i.number)} · ${fmt(i.amount)}</option>`).join('')}</select></label></div>
+    <div class="actions">${edit?'<button class="btn danger" id="t-del">Delete</button>':'<span></span>'}<span><button class="btn" id="t-cancel">Cancel</button> <button class="btn primary" id="t-save">${edit?'Save changes':'Add entry'}</button></span></div>
+  </div>`);
+  let dir=t.direction;
+  $('#seg').querySelectorAll('button').forEach(b=>b.onclick=()=>{dir=b.dataset.d;$('#seg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));$('#t-cat').innerHTML=cats(dir);});
+  $('#t-cur').onchange=e=>{$('#t-fx').value=fx[e.target.value]??1;};
+  $('#t-cancel').onclick=closeSheet;
+  $('#t-save').onclick=async()=>{
+    const amt=Number($('#t-amt').value); if(!amt) return toast('Enter an amount');
+    const row={id:t.id,date:$('#t-date').value,direction:dir,amount:amt,currency:$('#t-cur').value,fx_rate:Number($('#t-fx').value)||1,method:$('#t-method').value,
+      project_id:$('#t-proj').value||null,category:$('#t-cat').value,payee:$('#t-payee').value.trim()||null,description:$('#t-desc').value.trim()||null,receipt:$('#t-rec').value.trim()||null,invoice_id:$('#t-inv').value||null};
+    closeSheet(); await save(()=>DB.upsert('transactions',row),edit?'Saved':'Entry added');
+  };
+  if(edit) $('#t-del').onclick=async()=>{ if(confirm('Delete this entry?')){ closeSheet(); await save(()=>DB.remove('transactions',t.id),'Deleted'); } };
+}
+function openProject(p){
+  const edit=!!p; p=p||{status:'Active',budget:''};
+  openSheet(`<h2>${edit?'Edit project':'New project'}</h2><div class="f">
+    <label>Project name<input id="p-name" value="${esc(p.name||'')}" placeholder="e.g. Desert Roads — brand film"></label>
+    <label>Client<input id="p-client" value="${esc(p.client||'')}"></label>
+    <div class="row"><label>Status<select id="p-status">${STATUS.map(s=>`<option ${p.status===s?'selected':''}>${s}</option>`).join('')}</select></label><label>Budget (LYD)<input id="p-budget" type="number" inputmode="decimal" value="${p.budget}"></label></div>
+    <label>Notes<textarea id="p-notes" rows="2">${esc(p.notes||'')}</textarea></label>
+    <div class="actions">${edit?'<button class="btn danger" id="p-del">Delete</button>':'<span></span>'}<span><button class="btn" id="p-cancel">Cancel</button> <button class="btn primary" id="p-save">${edit?'Save changes':'Create project'}</button></span></div></div>`);
+  $('#p-cancel').onclick=closeSheet;
+  $('#p-save').onclick=async()=>{ const name=$('#p-name').value.trim(); if(!name) return toast('Give the project a name');
+    const row={id:p.id,name,client:$('#p-client').value.trim()||null,status:$('#p-status').value,budget:Number($('#p-budget').value)||0,notes:$('#p-notes').value.trim()||null};
+    closeSheet(); await save(()=>DB.upsert('projects',row),edit?'Saved':'Project created'); };
+  if(edit) $('#p-del').onclick=async()=>{ if(confirm('Delete this project? Its transactions stay but lose the link.')){ closeSheet(); await save(()=>DB.remove('projects',p.id),'Deleted'); } };
+}
+function openInvoice(i){
+  const edit=!!i; const next='INV-'+String(D.invoices.length+1).padStart(3,'0');
+  i=i||{number:next,issued:today(),due:'',status:'Draft',amount:'',project_id:D.projects[0]?.id||''};
+  openSheet(`<h2>${edit?'Edit invoice':'New invoice'}</h2><div class="f">
+    <div class="row"><label>Invoice number<input id="i-num" value="${esc(i.number)}"></label><label>Status<select id="i-status">${INV_STATUS.map(s=>`<option ${i.status===s?'selected':''}>${s}</option>`).join('')}</select></label></div>
+    <label>Project<select id="i-proj">${D.projects.map(p=>`<option value="${p.id}" ${i.project_id===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
+    <label>Client<input id="i-client" value="${esc(i.client||'')}"></label>
+    <div class="row3"><label>Amount (LYD)<input id="i-amt" type="number" inputmode="decimal" value="${i.amount}"></label><label>Issued<input id="i-issued" type="date" value="${i.issued||''}"></label><label>Due<input id="i-due" type="date" value="${i.due||''}"></label></div>
+    <div class="actions">${edit?'<button class="btn danger" id="i-del">Delete</button>':'<span></span>'}<span><button class="btn" id="i-cancel">Cancel</button> <button class="btn primary" id="i-save">${edit?'Save changes':'Create invoice'}</button></span></div></div>`);
+  $('#i-proj').onchange=e=>{ const p=D.projects.find(x=>x.id===e.target.value); if(p&&!$('#i-client').value) $('#i-client').value=p.client||''; };
+  $('#i-cancel').onclick=closeSheet;
+  $('#i-save').onclick=async()=>{ const row={id:i.id,number:$('#i-num').value.trim(),project_id:$('#i-proj').value||null,client:$('#i-client').value.trim()||null,amount:Number($('#i-amt').value)||0,issued:$('#i-issued').value||today(),due:$('#i-due').value||null,status:$('#i-status').value};
+    if(!row.number) return toast('Enter an invoice number'); closeSheet(); await save(()=>DB.upsert('invoices',row),edit?'Saved':'Invoice created'); };
+  if(edit) $('#i-del').onclick=async()=>{ if(confirm('Delete this invoice?')){ closeSheet(); await save(()=>DB.remove('invoices',i.id),'Deleted'); } };
+}
+
+boot();
+</script>
 </body>
 </html>
