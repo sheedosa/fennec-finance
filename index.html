@@ -68,6 +68,7 @@ a{color:inherit}
 .side .who b{font-weight:500;opacity:1;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .side .who .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--in);margin-right:6px;vertical-align:1px}
 .side .who .dot.off{background:var(--out)}
+.side .who .ver{opacity:.5;font-size:11px;margin-top:4px}
 .main{padding:28px 32px 110px;max-width:1120px;width:100%}
 .topbar{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:18px;flex-wrap:wrap}
 h1{font-size:26px;margin:0;letter-spacing:-.01em;font-weight:700}
@@ -317,6 +318,7 @@ const I = {
   down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>'
 };
+const APP_VERSION = '1.1.0';
 const STATUS = ['Pitching','Active','Delivered','Closed'];
 const INV_STATUS = ['Draft','Sent','Paid','Cancelled'];
 const METHODS = ['Cash','Bank Transfer','Cheque','Card'];
@@ -455,7 +457,7 @@ function shell(content){
   const who = DB.mode==='supabase' ? `<span><span class="dot"></span>Live</span><b title="${esc(DB.user?.email||'')}">${esc(DB.user?.email||'')}</b>` : `<span><span class="dot off"></span>Offline — nothing is saved</span>`;
   app.innerHTML=`<div class="shell">
     <aside class="side"><div class="brand">${I.mark}<div>Fennec<small>Production finance</small></div></div><nav class="nav" aria-label="Main">${nav()}</nav>
-      <div class="spacer"></div><div class="who">${who}</div></aside>
+      <div class="spacer"></div><div class="who">${who}<span class="ver">v${APP_VERSION}</span></div></aside>
     <main class="main">${content}</main></div>
     <nav class="tabbar" aria-label="Main">${nav()}</nav>
     <button class="fab" id="fab" aria-label="Add entry">${I.plus}<span>Add entry</span></button>`;
@@ -618,7 +620,7 @@ function renderAuth(msg){
       <div class="fld"><span class="lbl">Password</span><input id="au-pass" type="password" autocomplete="current-password" required><small class="err"></small></div>
       <div class="msg" id="au-err">${esc(msg||'')}</div>
       <button class="btn primary" type="submit" id="au-go" style="height:44px;justify-content:center">Sign in</button>
-      <div class="hint" style="text-align:center">Accounts are created by the owner. Ask them if you need access.</div>
+      <div class="hint" style="text-align:center">Accounts are created by the owner. Ask them if you need access.<br><span style="opacity:.6">v${APP_VERSION}</span></div>
     </div></form></div>`;
   $('#au-email').focus();
   $('#auth-form').onsubmit=async e=>{
