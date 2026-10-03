@@ -191,7 +191,7 @@ code{background:var(--paper);padding:1px 5px;border-radius:4px;font-size:13px}
 /* ============================================================
    Fennec Finance — single-file app.
    Data layer: Supabase when configured (Settings), otherwise an
-   in-memory demo so the UI can be explored before connecting.
+   empty in-memory store (nothing is saved) until connected.
    ============================================================ */
 const ICONS = {
   home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
@@ -211,31 +211,10 @@ const fmtD = d => d ? new Date(d+'T00:00').toLocaleDateString('en-GB',{day:'nume
 const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const store = { get(k){ try{return localStorage.getItem(k)}catch(e){return null} }, set(k,v){ try{localStorage.setItem(k,v)}catch(e){} }, del(k){ try{localStorage.removeItem(k)}catch(e){} } };
 
-/* ---------- demo data (used until Supabase is connected) ---------- */
+/* ---------- local defaults (used until Supabase is connected; nothing is saved) ---------- */
 function demoData(){
-  const p1=uid(), p2=uid(), p3=uid(), i1=uid(), i2=uid();
   return {
-    projects:[
-      {id:p1,name:'Desert Roads — LPC Brand Film',client:'Libya Petroleum Co.',status:'Active',budget:85000,notes:'Delivery mid-Nov'},
-      {id:p2,name:'Tripoli Nights — Music Video',client:'Ahmed Fakroun',status:'Active',budget:22000,notes:''},
-      {id:p3,name:'Sea of Sand — Documentary',client:'Al-Mukhtar Foundation',status:'Pitching',budget:140000,notes:'Awaiting contract'},
-    ],
-    invoices:[
-      {id:i1,number:'INV-001',project_id:p1,client:'Libya Petroleum Co.',issued:'2026-09-01',due:'2026-09-15',amount:42500,status:'Paid'},
-      {id:i2,number:'INV-002',project_id:p2,client:'Ahmed Fakroun',issued:'2026-09-10',due:'2026-09-25',amount:11000,status:'Paid'},
-      {id:uid(),number:'INV-003',project_id:p1,client:'Libya Petroleum Co.',issued:'2026-09-28',due:'2026-10-12',amount:42500,status:'Sent'},
-    ],
-    transactions:[
-      {id:uid(),date:'2026-09-03',project_id:p1,direction:'In',category:'Deposit / Advance',payee:'Libya Petroleum Co.',description:'50% advance',amount:42500,currency:'LYD',fx_rate:1,method:'Bank Transfer',invoice_id:i1},
-      {id:uid(),date:'2026-09-05',project_id:p1,direction:'Out',category:'Equipment',payee:'Tripoli Camera House',description:'Alexa Mini + lenses, 5 days',amount:6500,currency:'LYD',fx_rate:1,method:'Bank Transfer',receipt:'RC-1001'},
-      {id:uid(),date:'2026-09-08',project_id:p1,direction:'Out',category:'Crew & Talent',payee:'Ahmed Al-Mansouri',description:'DOP × 5 days',amount:2250,currency:'LYD',fx_rate:1,method:'Cash',receipt:'RC-1002'},
-      {id:uid(),date:'2026-09-09',project_id:p1,direction:'Out',category:'Locations & Permits',payee:'Petty Cash',description:'Ghadames filming permit',amount:1800,currency:'LYD',fx_rate:1,method:'Cash'},
-      {id:uid(),date:'2026-09-12',project_id:p1,direction:'Out',category:'Transport & Fuel',payee:'Petty Cash',description:'Fuel + 4×4 hire',amount:3200,currency:'LYD',fx_rate:1,method:'Cash'},
-      {id:uid(),date:'2026-09-15',project_id:p2,direction:'Out',category:'Post-Production',payee:'Mediterranean Post',description:'Offline edit',amount:1500,currency:'USD',fx_rate:6.85,method:'Bank Transfer'},
-      {id:uid(),date:'2026-09-18',project_id:p2,direction:'In',category:'Client Payment',payee:'Ahmed Fakroun',description:'Final payment',amount:11000,currency:'LYD',fx_rate:1,method:'Cash',invoice_id:i2},
-      {id:uid(),date:'2026-09-22',project_id:p2,direction:'Out',category:'Post-Production',payee:'Mediterranean Post',description:'Grade + online',amount:800,currency:'EUR',fx_rate:7.4,method:'Bank Transfer'},
-      {id:uid(),date:'2026-09-30',project_id:p1,direction:'Out',category:'Catering & Accommodation',payee:'Petty Cash',description:'Crew meals, 5 days',amount:1250,currency:'LYD',fx_rate:1,method:'Cash'},
-    ],
+    projects:[], invoices:[], transactions:[],
     settings:{
       fx_rates:{LYD:1,USD:6.85,EUR:7.40},
       categories:[
@@ -247,7 +226,7 @@ function demoData(){
         {name:'Other Expense',direction:'Out',department:'Overhead'},{name:'Client Payment',direction:'In',department:'Revenue'},
         {name:'Deposit / Advance',direction:'In',department:'Revenue'},{name:'Grant / Sponsorship',direction:'In',department:'Revenue'},
         {name:'Other Income',direction:'In',department:'Revenue'}],
-      payees:['Petty Cash','Tripoli Camera House','Ahmed Al-Mansouri','Mediterranean Post','Libya Petroleum Co.','Ahmed Fakroun']
+      payees:['Petty Cash']
     }
   };
 }
@@ -332,7 +311,7 @@ function shell(content){
   const nav=cls=>items.map(([k,l,ic])=>`<button class="${page===k?'on':''}" data-nav="${k}">${ic}<span>${l}</span></button>`).join('');
   app.innerHTML=`<div class="shell">
     <aside class="side"><div class="brand">Fennec<small>Production finance</small></div><nav class="nav">${nav()}</nav>
-      <div class="spacer"></div><div class="status">${DB.mode==='demo'?'Sample data':'Live'}</div></aside>
+      <div class="spacer"></div><div class="status">${DB.mode==='demo'?'Not connected':'Live'}</div></aside>
     <main class="main">${content}</main></div>
     <nav class="tabbar">${nav()}</nav>
     <button class="fab" id="fab">${ICONS.plus}<span>Add entry</span></button>`;
@@ -352,7 +331,7 @@ function homeView(s){
   const open=s.projects.filter(p=>p.status!=='Closed');
   const dateStr=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
   return `<div class="topbar"><h1>Fennec Productions</h1><span class="muted small">${dateStr}</span></div>
-  ${DB.mode==='demo'?`<div class="note" style="margin-bottom:18px">Sample data. Connect your database in <a href="#" data-nav="settings">Settings</a> to start for real.</div>`:''}
+  ${DB.mode==='demo'?`<div class="note" style="margin-bottom:18px">Not connected — nothing you enter here is saved. Connect your database in <a href="#" data-nav="settings">Settings</a> to start.</div>`:''}
   <section class="statement">
     <div class="hero"><div class="l">What we have after all money in and out</div><div class="v num ${s.net<0?'neg':''}">${fmt(s.net)}<small>LYD</small></div>
       <div class="sub"><b class="num">${fmt(s.inc)}</b> received · <b class="num">${fmt(s.exp)}</b> spent</div></div>
@@ -425,7 +404,7 @@ function settingsView(){
     <div>
       <div class="card" style="margin-bottom:14px"><h2>Database connection</h2>
         ${DB.mode==='supabase'?`<p>Connected to <code>${esc(store.get('sb_url'))}</code>.</p><div class="actions"><button class="btn" id="signout">Sign out</button><button class="btn danger" id="disconnect">Disconnect</button></div>`
-        :`<p class="muted small" style="margin-top:0">Running on sample data. To connect your own Supabase project: run <code>schema.sql</code> in its SQL editor, add a user under Authentication, then paste the project URL and anon key here. ${onClaude?'<strong>This preview on claude.ai cannot reach Supabase — host the file (Netlify, Vercel, GitHub Pages) to connect.</strong>':''}</p>
+        :`<p class="muted small" style="margin-top:0">Not connected yet. To connect your own Supabase project: run <code>schema.sql</code> in its SQL editor, add a user under Authentication, then paste the project URL and anon key here. ${onClaude?'<strong>This preview on claude.ai cannot reach Supabase — host the file (Netlify, Vercel, GitHub Pages) to connect.</strong>':''}</p>
         <div class="f"><label>Project URL<input id="sb-url" placeholder="https://xxxx.supabase.co"></label><label>Anon public key<input id="sb-key" placeholder="eyJ..."></label><div class="actions"><span></span><button class="btn primary" id="connect">Connect</button></div></div>`}
       </div>
       <div class="card"><h2>Exchange rates to LYD</h2>
